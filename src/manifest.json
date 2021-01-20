@@ -1,0 +1,64 @@
+{
+    "manifest_version": 2,
+    "name": "PerfChaser",
+    "version": "0.1",
+    "description": "",
+    "homepage_url": "https://github.com/whimboo/perfchaser",
+    "icons": {
+        "48": "icons/perfchaser-48.png"
+    },
+    "applications": {
+        "gecko": {
+            "id": "perfchaser@hskupin.info"
+        }
+    },
+    "permissions": [
+        "activeTab",
+        "alarms"
+    ],
+    "experiment_apis": {
+        "memory": {
+            "schema": "api/memory/schema.json",
+            "parent": {
+                "scopes": [
+                    "addon_parent"
+                ],
+                "script": "api/memory/api.js",
+                "paths": [
+                    [
+                        "memory"
+                    ]
+                ]
+            }
+        },
+        "processes": {
+            "schema": "api/processes/schema.json",
+            "parent": {
+                "scopes": [
+                    "addon_parent"
+                ],
+                "script": "api/processes/api.js",
+                "paths": [
+                    [
+                        "processes"
+                    ]
+                ]
+            }
+        }
+    },
+    "background": {
+        "scripts": [
+            "content/background.js"
+        ]
+    },
+    "browser_action": {
+        "default_icon": "icons/perfchaser-32.png",
+        "default_title": "PerfChaser",
+        "default_popup": "content/popup.html"
+    },
+    "sidebar_action": {
+        "default_title": "PerfChaser",
+        "default_panel": "content/sidebar.html",
+        "default_icon": "icons/perfchaser-32.png"
+    }
+}

@@ -1,0 +1,15 @@
+[
+    {
+        "namespace": "processes",
+        "description": "Processes",
+        "functions": [
+            {
+                "name": "getProcessInfo",
+                "type": "function",
+                "description": "Get information from all processes",
+                "parameters": [],
+                "async": true
+            }
+        ]
+    }
+]

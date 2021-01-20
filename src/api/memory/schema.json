@@ -1,0 +1,36 @@
+[
+  {
+    "namespace": "memory",
+    "description": "Memory",
+    "functions": [
+      {
+        "name": "getHeapAllocated",
+        "type": "function",
+        "description": "Get Heap allocated memory",
+        "parameters": [],
+        "async": true
+      },
+      {
+        "name": "getHeapUnclassified",
+        "type": "function",
+        "description": "Get Heap unclassified memory",
+        "parameters": [],
+        "async": true
+      },
+      {
+        "name": "getResident",
+        "type": "function",
+        "description": "Get Resident memory",
+        "parameters": [],
+        "async": true
+      },
+      {
+        "name": "minimizeMemory",
+        "type": "function",
+        "description": "Minimize Memory",
+        "parameters": [],
+        "async": true
+      }
+    ]
+  }
+]

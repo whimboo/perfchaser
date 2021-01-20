@@ -1,0 +1,88 @@
+@import url("chrome://global/skin/in-content/common.css");
+
+html, body {
+  height: 300px;
+}
+
+table {
+  font-size: .8em;
+  border-spacing: 0;
+  background-color: var(--in-content-box-background);
+  margin: 0;
+  top: 0;
+  left: 0;
+}
+
+/* Avoid scrolling the header */
+#tbody {
+  display: block;
+  overflow-y: auto;
+  /* 2em is the height of the header, 1px is its border,
+     the last 8px compensate something unknown :-/ */
+  height: calc(100vh - 2em - 1px - 8px);
+}
+
+thead, #tbody tr {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+td:nth-child(2) {
+  width: 55px;
+  text-align: right;
+}
+
+td:nth-child(3) {
+  width: 50px;
+  text-align: right;
+}
+
+td:nth-child(4) {
+  width: 85px;
+  text-align: right;
+}
+
+#tbody {
+  border-top: 1px solid var(--in-content-border-color);
+}
+thead > tr > td {
+    border: none;
+    background-color: var(--in-content-box-background-hover);
+    padding: 5px 10px;
+    text-align: center;
+}
+#footer {
+    background-color: var(--in-content-box-background-hover);
+}
+thead > tr > td:not(:first-child) {
+    border-inline-start-width: 1px;
+    border-inline-start-style: solid;
+    border-image: linear-gradient(transparent 0%, transparent 20%, #c1c1c1 20%, #c1c1c1 80%, transparent 80%, transparent 100%) 1 1;
+    border-bottom: 1px solid var(--in-content-border-color);
+}
+td {
+    padding: 5px 10px;
+    min-height: 2em;
+    color: var(--in-content-text-color);
+    max-width: 50vw;
+    overflow: hidden;
+    white-space: nowrap;
+}
+td:last-child {
+    text-overflow: ellipsis;
+}
+
+#tbody > tr[selected] > td {
+    background-color: var(--in-content-item-selected);
+    color: var(--in-content-selected-text);
+}
+#tbody > tr:hover {
+    background-color: var(--in-content-item-hover);
+}
