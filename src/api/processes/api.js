@@ -18,12 +18,16 @@ class Thread extends Object {
 
     this.cpuKernel = 0;
     this.cpuUser = 0;
+    this.cpuTotal = 0;
   }
 
   static fromProcessInfo(info) {
     const thread = new Thread(info.tid, info.name);
+
     thread.cpuKernel = info.cpuKernel;
     thread.cpuUser = info.cpuUser;
+    thread.cpuTotal = info.cpuKernel + info.cpuUser;
+
     return thread;
   }
 }
@@ -39,6 +43,7 @@ class Process extends Object {
 
     this.cpuKernel = 0;
     this.cpuUser = 0;
+    this.cpuTotal = 0;
 
     // Resident set size is the total memory used by the process, including shared memory.
     // Resident unique size is the memory used by the process, without shared memory.
@@ -54,6 +59,7 @@ class Process extends Object {
 
     process.cpuKernel = info.cpuKernel;
     process.cpuUser = info.cpuUser;
+    process.cpuTotal = info.cpuKernel + info.cpuUser;
 
     if (info.type == "browser") {
       process.residentMemory = info.residentSetSize;
