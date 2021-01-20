@@ -16,17 +16,17 @@ class Thread extends Object {
     this.tid = tid;
     this.name = name;
 
-    this.cpuKernel = 0;
-    this.cpuUser = 0;
-    this.cpuTotal = 0;
+    this.totalCpuKernel = 0;
+    this.totalCpuUser = 0;
+    this.totalCpu = 0;
   }
 
   static fromProcessInfo(info) {
     const thread = new Thread(info.tid, info.name);
 
-    thread.cpuKernel = info.cpuKernel;
-    thread.cpuUser = info.cpuUser;
-    thread.cpuTotal = info.cpuKernel + info.cpuUser;
+    thread.totalCpuKernel = info.cpuKernel;
+    thread.totalCpuUser = info.cpuUser;
+    thread.totalCpu = info.cpuKernel + info.cpuUser;
 
     return thread;
   }
@@ -41,9 +41,9 @@ class Process extends Object {
     this.name = name;
     this.threads = new Map();
 
-    this.cpuKernel = 0;
-    this.cpuUser = 0;
-    this.cpuTotal = 0;
+    this.totalCpuKernel = 0;
+    this.totalCpuUser = 0;
+    this.totalCpu = 0;
 
     // Resident set size is the total memory used by the process, including shared memory.
     // Resident unique size is the memory used by the process, without shared memory.
@@ -57,9 +57,9 @@ class Process extends Object {
     const type = PROCESS_TYPES_MAP[info.type] || info.type;
     const process = new Process(info.pid, type, info.filename);
 
-    process.cpuKernel = info.cpuKernel;
-    process.cpuUser = info.cpuUser;
-    process.cpuTotal = info.cpuKernel + info.cpuUser;
+    process.totalCpuKernel = info.cpuKernel;
+    process.totalCpuUser = info.cpuUser;
+    process.totalCpu = info.cpuKernel + info.cpuUser;
 
     if (info.type == "browser") {
       process.residentMemory = info.residentSetSize;
