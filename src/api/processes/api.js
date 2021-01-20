@@ -51,41 +51,20 @@ class Process extends Object {
   static fromProcessInfo(info) {
     const type = PROCESS_TYPES_MAP[info.type] || info.type;
     const process = new Process(info.pid, type, info.filename);
+
     process.cpuKernel = info.cpuKernel;
     process.cpuUser = info.cpuUser;
-    process.residentMemory = info.residentUniqueSize;
 
-    info.threads.forEach(entry => {
-      const thread = Thread.fromProcessInfo(entry);
-      process.threads.set(thread.tid, thread);
-    });
-
-    return process;
-  }
-}
-
-class ParentProcess extends Process {
-  constructor(pid, name) {
-    super(pid, "Main Process", name);
-
-    this.children = new Map();
-  }
-
-  static fromProcessInfo(info) {
-    const process = new ParentProcess(info.pid, info.filename);
-    process.cpuKernel = info.cpuKernel;
-    process.cpuUser = info.cpuUser;
-    process.residentMemory = info.residentSetSize;
-
-    info.threads.forEach(entry => {
-      const thread = Thread.fromProcessInfo(entry);
-      process.threads.set(thread.tid, thread);
-    });
-
-    for (const child of info.children) {
-      const childProcess = Process.fromProcessInfo(child);
-      process.children.set(childProcess.pid, childProcess);
+    if (info.type == "browser") {
+      process.residentMemory = info.residentSetSize;
+    } else {
+      process.residentMemory = info.residentUniqueSize;
     }
+
+    info.threads.forEach(entry => {
+      const thread = Thread.fromProcessInfo(entry);
+      process.threads.set(thread.tid, thread);
+    });
 
     return process;
   }
@@ -97,7 +76,17 @@ var processes = class extends ExtensionAPI {
       processes: {
         async getProcessInfo() {
           const info = await ChromeUtils.requestProcInfo();
-          return ParentProcess.fromProcessInfo(info);
+
+          const processes = new Map();
+          const parentProcess = Process.fromProcessInfo(info, true);
+          processes.set(parentProcess.pid, parentProcess);
+
+          for (const child of info.children) {
+            const process = Process.fromProcessInfo(child, false);
+            processes.set(process.pid, process);
+          }
+
+          return processes;
         }
       }
     };

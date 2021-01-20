@@ -16,14 +16,7 @@ class TaskManager extends Object {
   }
 
   async updateProcessInfo() {
-    const processInfo = await browser.processes.getProcessInfo();
-
-    // Use a flattened process list
-    this.processes = new Map();
-    this.processes.set(processInfo.pid, processInfo);
-    processInfo.children.forEach(child => {
-      this.processes.set(child.pid, child);
-    });
+    this.processes = await browser.processes.getProcessInfo();
 
     await browser.runtime.sendMessage({
       processes: this.processes,
