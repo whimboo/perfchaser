@@ -84,10 +84,10 @@ class Process extends Object {
       process.residentMemory = info.residentUniqueSize;
     }
 
-    info.threads.forEach(entry => {
-      const thread = Thread.fromProcessInfo(entry);
-      process.threads.set(thread.tid, thread);
-    });
+    // info.threads.forEach(entry => {
+    //   const thread = Thread.fromProcessInfo(entry);
+    //   process.threads.set(thread.tid, thread);
+    // });
 
     return process;
   }
@@ -104,9 +104,9 @@ class Process extends Object {
       (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
     this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
 
-    this.threads.forEach(thread => {
-      thread.updateDelta(timeDelta);
-    });
+    // this.threads.forEach(thread => {
+    //   thread.updateDelta(timeDelta);
+    // });
   }
 }
 
