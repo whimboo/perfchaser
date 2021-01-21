@@ -1,5 +1,5 @@
 // TODO: read from settings
-const TIME_UPDATE_INTERVAL = 2; // seconds
+const TIME_UPDATE_INTERVAL = 5; // seconds
 
 
 class TaskManager extends Object {
