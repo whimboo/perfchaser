@@ -1,3 +1,5 @@
+const NS_PER_MS = 1000 * 1000;
+
 const PROCESS_TYPES_MAP = {
   "browser": "Main Process",
   "extension": "WebExtensions",
@@ -9,6 +11,9 @@ const PROCESS_TYPES_MAP = {
   "webIsolated": "Web Content",
 };
 
+var previousSnapshotTime = 0;
+var previousProcesses = new Map();
+
 class Thread extends Object {
   constructor(tid, name) {
     super();
@@ -19,6 +24,10 @@ class Thread extends Object {
     this.totalCpuKernel = 0;
     this.totalCpuUser = 0;
     this.totalCpu = 0;
+
+    this.currentCpuKernel = null;
+    this.currentCpuUser = null;
+    this.currentCpu = null;
   }
 
   static fromProcessInfo(info) {
@@ -29,6 +38,10 @@ class Thread extends Object {
     thread.totalCpu = info.cpuKernel + info.cpuUser;
 
     return thread;
+  }
+
+  updateDelta(timeDelta) {
+    // TODO
   }
 }
 
@@ -45,11 +58,10 @@ class Process extends Object {
     this.totalCpuUser = 0;
     this.totalCpu = 0;
 
-    // Resident set size is the total memory used by the process, including shared memory.
-    // Resident unique size is the memory used by the process, without shared memory.
-    // Since all processes share memory with the parent process, we count the shared memory
-    // as part of the parent process (`"browser"`) rather than as part of the individual
-    // processes.
+    this.currentCpuKernel = null;
+    this.currentCpuUser = null;
+    this.currentCpu = null;
+
     this.residentMemory = 0;
   }
 
@@ -61,6 +73,11 @@ class Process extends Object {
     process.totalCpuUser = info.cpuUser;
     process.totalCpu = info.cpuKernel + info.cpuUser;
 
+    // Resident set size is the total memory used by the process, including shared memory.
+    // Resident unique size is the memory used by the process, without shared memory.
+    // Since all processes share memory with the parent process, we count the shared memory
+    // as part of the parent process (`"browser"`) rather than as part of the individual
+    // processes.
     if (info.type == "browser") {
       process.residentMemory = info.residentSetSize;
     } else {
@@ -74,6 +91,23 @@ class Process extends Object {
 
     return process;
   }
+
+  updateDelta(timeDelta) {
+    const previous = previousProcesses.get(this.pid);
+    if (!previous) {
+      return;
+    }
+
+    this.currentCpuKernel =
+      (this.totalCpuKernel - previous.totalCpuKernel) / timeDelta;
+    this.currentCpuUser =
+      (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
+    this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
+
+    this.threads.forEach(thread => {
+      thread.updateDelta(timeDelta);
+    });
+  }
 }
 
 var processes = class extends ExtensionAPI {
@@ -82,15 +116,22 @@ var processes = class extends ExtensionAPI {
       processes: {
         async getProcessInfo() {
           const info = await ChromeUtils.requestProcInfo();
+          const now = Cu.now();
+          const timeDelta = (now - previousSnapshotTime) * NS_PER_MS;
 
           const processes = new Map();
           const parentProcess = Process.fromProcessInfo(info, true);
+          parentProcess.updateDelta(timeDelta);
           processes.set(parentProcess.pid, parentProcess);
 
           for (const child of info.children) {
             const process = Process.fromProcessInfo(child, false);
+            process.updateDelta(timeDelta);
             processes.set(process.pid, process);
           }
+
+          previousSnapshotTime = now;
+          previousProcesses = processes
 
           return processes;
         }

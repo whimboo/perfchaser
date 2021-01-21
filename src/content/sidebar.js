@@ -23,7 +23,7 @@ function addProcess(process) {
   row.appendChild(pid);
 
   const cpu = document.createElement("td");
-  cpu.textContent = "100%";
+  cpu.textContent = (process.currentCpu * 100).toFixed(1);
   row.appendChild(cpu);
 
   const memory = document.createElement("td");
