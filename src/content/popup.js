@@ -1,10 +1,15 @@
-async function minimizeMemory() {
-  const button = document.getElementById("minimize");
-  button.disabled = true;
-  await browser.memory.minimizeMemory();
-  button.disabled = false;
+const updateIntervalSlider = document.getElementById("update-interval");
+const updateIntervalValue = document.getElementById("update-interval-value");
+
+function updateInterval(ev) {
+  browser.runtime.sendMessage({
+    name: "set-update-interval",
+    interval: parseFloat(ev.target.value),
+  })
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("minimize").addEventListener("click", minimizeMemory);
+updateIntervalSlider.addEventListener("change", updateInterval);
+updateIntervalSlider.addEventListener("input", ev => {
+  updateIntervalValue.value = ev.target.value;
 });
+updateIntervalValue.value = updateIntervalSlider.value;
