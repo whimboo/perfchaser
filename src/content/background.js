@@ -13,12 +13,21 @@ class TaskManager extends Object {
       when: Date.now(),
       periodInMinutes: TIME_UPDATE_INTERVAL / 60,
     });
+
+    browser.runtime.onMessage.addListener(this.handleMessage.bind(this));
+  }
+
+  async handleMessage(request) {
+    switch (request.name) {
+      case "get-process-list":
+        return this.updateProcessInfo();
+    }
   }
 
   async updateProcessInfo() {
     this.processes = await browser.processes.getProcessInfo();
 
-    await browser.runtime.sendMessage({
+    return browser.runtime.sendMessage({
       processes: this.processes,
     });
   }

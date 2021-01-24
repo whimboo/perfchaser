@@ -101,6 +101,7 @@ function sort(by) {
 
 window.addEventListener("load", () => {
   browser.runtime.onMessage.addListener(handleMessage);
+  browser.runtime.sendMessage({ name: "get-process-list" });
 
   document.getElementsByTagName("thead")[0].addEventListener("click", ev => {
     if (ev.target.id) {
