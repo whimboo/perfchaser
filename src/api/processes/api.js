@@ -19,6 +19,57 @@ const PROCESS_TYPES_MAP = {
 var previousSnapshotTime = 0;
 var previousProcesses = new Map();
 
+let tabFinder = {
+  update() {
+    this._map = new Map();
+    for (let win of Services.wm.getEnumerator("navigator:browser")) {
+      let tabbrowser = win.gBrowser;
+      for (let browser of tabbrowser.browsers) {
+        let id = browser.outerWindowID; // May be `null` if the browser isn't loaded yet
+        if (id != null) {
+          this._map.set(id, browser);
+        }
+      }
+      if (tabbrowser.preloadedBrowser) {
+        let browser = tabbrowser.preloadedBrowser;
+        if (browser.outerWindowID) {
+          this._map.set(browser.outerWindowID, browser);
+        }
+      }
+    }
+  },
+
+  /**
+   * Find the <xul:tab> for a window id.
+   *
+   * This is useful e.g. for reloading or closing tabs.
+   *
+   * @return null If the xul:tab could not be found, e.g. if the
+   * windowId is that of a chrome window.
+   * @return {{tabbrowser: <xul:tabbrowser>, tab: <xul.tab>}} The
+   * tabbrowser and tab if the latter could be found.
+   */
+  get(id) {
+    let browser = this._map.get(id);
+    if (!browser) {
+      return null;
+    }
+    let tabbrowser = browser.getTabBrowser();
+    if (!tabbrowser) {
+      return {
+        tabbrowser: null,
+        tab: {
+          getAttribute() {
+            return "";
+          },
+          linkedBrowser: browser,
+        },
+      };
+    }
+    return { tabbrowser, tab: tabbrowser.getTabForBrowser(browser) };
+  },
+};
+
 class Thread extends Object {
   constructor(tid, name) {
     super();
@@ -67,6 +118,7 @@ class Process extends Object {
     this.type = type;
     this.name = name;
     this.threads = new Map();
+    this.windows = [];
 
     this.isParent = false;
 
@@ -106,6 +158,35 @@ class Process extends Object {
       process.threads.set(thread.tid, thread);
     });
 
+    if (info.windows && info.type != "extension") {
+      process.windows = info.windows.map(win => {
+        const tab = tabFinder.get(win.outerWindowId);
+        let type = "Frame";
+        let displayRank;
+
+        if (tab) {
+          type = "Tab";
+          displayRank = 1;
+        } else if (win.isProcessRoot) {
+          displayRank = 2;
+        } else if (win.documentTitle) {
+          displayRank = 3;
+        } else {
+          displayRank = 4;
+        }
+        return {
+          outerWindowId: win.outerWindowId,
+          documentURI: win.documentURI.spec,
+          documentTitle: win.documentTitle,
+          isProcessRoot: win.isProcessRoot,
+          isInProcess: win.isInProcess,
+          type,
+          // A rank used to quickly sort windows.
+          displayRank,
+        };
+      });
+    }
+
     return process;
   }
 
@@ -142,6 +223,8 @@ var processes = class extends ExtensionAPI {
           const info = await ChromeUtils.requestProcInfo();
           const now = Cu.now();
           const timeDelta = (now - previousSnapshotTime) * NS_PER_MS;
+
+          tabFinder.update();
 
           const processes = new Map();
           const parentProcess = Process.fromProcessInfo(info, true);

@@ -32,6 +32,8 @@ class TaskManager extends Object {
         return this.updateProcessInfo();
       case "get-process-details":
         return this.getProcessDetails(request.pid);
+      case "get-page-list":
+        return this.getPageInfo(request.pid);
       case "get-thread-list":
         return this.getThreadInfo(request.pid);
       case "set-update-interval":
@@ -68,17 +70,31 @@ class TaskManager extends Object {
       details: {
         name: process.name,
         threadCount: process.threads.size,
-        websites: undefined,
       },
+    });
+  }
+
+  async getPageInfo(pid) {
+    const process = this.processes.get(pid);
+    if (!process) {
+      return;
+    }
+
+    return browser.runtime.sendMessage({
+      name: "page-list",
+      pages: process.windows,
     });
   }
 
   async getThreadInfo(pid) {
     const process = this.processes.get(pid);
+    if (!process) {
+      return;
+    }
 
     return browser.runtime.sendMessage({
       name: "thread-list",
-      threads: process ? process.threads : [],
+      threads: process.threads,
     });
   }
 }

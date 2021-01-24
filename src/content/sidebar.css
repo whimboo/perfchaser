@@ -101,6 +101,32 @@ td:last-child {
 }
 
 /* Take scrollbar width into account for aligning 'Memory'  */
+#pages-table thead td:nth-child(2) {
+  width: 75px;
+  padding-right: 25px;
+}
+
+#pages-table tbody {
+  height: 29vh;
+}
+
+#pages-table td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+#pages-table tbody td:nth-child(1):hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#pages-table td:nth-child(2) {
+  width: 65px;
+  text-align: center;
+}
+
+/* Take scrollbar width into account for aligning 'Memory'  */
 #threads-table thead td:nth-child(3) {
   width: 80px;
   padding-right: 25px;

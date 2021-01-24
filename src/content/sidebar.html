@@ -24,12 +24,25 @@
       <div id="process-info">
         <div class="tab">
           <button class="tablinks" name="details">Details</button>
+          <button class="tablinks" name="pages">Pages</button>
           <button class="tablinks" name="threads">Threads</button>
         </div>
 
         <div id="details" class="tabcontent">
           <p>Process Name: <span id="process-name"></span></p>
           <p>Threads: <span id="thread-count"></span></p>
+        </div>
+
+        <div id="pages" class="tabcontent">
+          <table id="pages-table">
+            <thead>
+              <tr>
+                <td id="location">Page</td>
+                <td id="type">Type</td>
+              </tr>
+            </thead>
+            <tbody id="tbody-pages"></tbody>
+          </table>
         </div>
 
         <div id="threads" class="tabcontent">

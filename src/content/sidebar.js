@@ -12,6 +12,7 @@ var processesActiveTab;
 var selectedProcess;
 
 var selectedDetailsPane;
+var pages;
 var threads;
 
 async function handleMessage(request) {
@@ -34,6 +35,12 @@ async function handleMessage(request) {
             pid: selectedProcess,
           });
           break;
+        case "pages":
+          browser.runtime.sendMessage({
+            name: "get-page-list",
+            pid: selectedProcess,
+          });
+          break;
         case "threads":
           browser.runtime.sendMessage({
             name: "get-thread-list",
@@ -44,6 +51,12 @@ async function handleMessage(request) {
 
     case "process-details":
       updateProcessDetails(request.details);
+      break;
+
+    case "page-list":
+      pages = Array.from(request.pages.values());
+      pages.sort((a, b) => a.displayRank - b.displayRank);
+      updatePagesView();
       break;
 
     case "thread-list":
@@ -145,6 +158,44 @@ function updateProcessDetails(details) {
 
   name.innerText = details.name;
   threadCount.innerText = details.threadCount;
+}
+
+function updatePagesView() {
+  const content = document.getElementById("tbody-pages");
+  let reuseableRow = content.firstChild;
+
+  pages.forEach(page => {
+    let row;
+    let url;
+    let type;
+
+    if (reuseableRow) {
+      row = reuseableRow;
+      url = reuseableRow.firstChild;
+      type = url.nextSibling;
+      reuseableRow = reuseableRow.nextSibling;
+    } else {
+      row = document.createElement("tr");
+      url = document.createElement("td");
+      url.appendChild(document.createTextNode(""));
+      row.appendChild(url);
+
+      type = document.createElement("td");
+      type.appendChild(document.createTextNode(""));
+      row.appendChild(type);
+
+      content.appendChild(row);
+    }
+
+    url.firstChild.data = page.documentTitle || page.documentURI;
+    type.firstChild.data = page.type;
+  });
+
+  while (reuseableRow) {
+    var nextSibling = reuseableRow.nextSibling;
+    reuseableRow.remove();
+    reuseableRow = nextSibling;
+  }
 }
 
 function updateThreadsView() {
@@ -249,6 +300,12 @@ function updateDetailsPane() {
     case "details":
       browser.runtime.sendMessage({
         name: "get-process-details",
+        pid: selectedProcess,
+      });
+      break;
+    case "pages":
+      browser.runtime.sendMessage({
+        name: "get-page-list",
         pid: selectedProcess,
       });
       break;
