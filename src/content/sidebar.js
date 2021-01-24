@@ -1,39 +1,112 @@
-async function handleMessage(request, sender, sendResponse) {
-  const content = document.getElementById("tbody");
-  while (content.hasChildNodes()) {
-    content.removeChild(content.lastChild);
-  }
+var sortBy;
+var sortAscending = false;
+// An array of objects representing information about processes.
+var processes;
 
-  //request.processes.sort((a, b) => b.residentSize - a.residentSize);
-  request.processes.forEach(process => {
-    addProcess(process);
-  });
+async function handleMessage(request, sender, sendResponse) {
+
+  processes = Array.from(request.processes.values());
+  updateView(sortProcesses(processes));
 }
 
-function addProcess(process) {
+function updateView(processes) {
   const content = document.getElementById("tbody");
-  const row = document.createElement("tr");
+  let reuseableRow = content.firstChild;
+  processes.forEach(process => {
+    let type;
+    let pid;
+    let cpu;
+    let memory;
+    if (reuseableRow) {
+      type = reuseableRow.firstChild;
+      pid = type.nextSibling;
+      cpu = pid.nextSibling;
+      memory = cpu.nextSibling;
+      reuseableRow = reuseableRow.nextSibling;
+    } else {
+      let row = document.createElement("tr");
+      type = document.createElement("td");
+      type.appendChild(document.createTextNode(""));
+      row.appendChild(type);
 
-  const type = document.createElement("td");
-  type.textContent = process.type;
-  row.appendChild(type);
+      pid = document.createElement("td");
+      pid.appendChild(document.createTextNode(""));
+      row.appendChild(pid);
 
-  const pid = document.createElement("td");
-  pid.textContent = process.pid;
-  row.appendChild(pid);
+      cpu = document.createElement("td");
+      cpu.appendChild(document.createTextNode(""));
+      row.appendChild(cpu);
 
-  const cpu = document.createElement("td");
-  cpu.textContent = (process.currentCpu * 100).toFixed(1);
-  row.appendChild(cpu);
+      memory = document.createElement("td");
+      memory.appendChild(document.createTextNode(""));
+      row.appendChild(memory);
+      content.appendChild(row);
+    }
 
-  const memory = document.createElement("td");
+    type.firstChild.data = process.type;
+    pid.firstChild.data = process.pid;
+    cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
+    memory.firstChild.data = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
+  });
 
-  memory.textContent = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
-  row.appendChild(memory);
-
-  content.appendChild(row);
+  while (reuseableRow) {
+    var nextSibling = reuseableRow.nextSibling;
+    reuseableRow.remove();
+    reuseableRow = nextSibling;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   browser.runtime.onMessage.addListener(handleMessage);
 });
+
+function sortProcesses(processes) {
+  if (!sortBy) {
+    return processes;
+  }
+
+  processes.sort(function(a, b) {
+    if (sortBy == "type") {
+      if (a.type < b.type) {
+        return -1;
+      }
+      if (a.type > b.type) {
+        return 1;
+      }
+      return 0;
+    }
+
+    if (sortBy == "pid") {
+      return parseInt(a.pid) - parseInt(b.pid);
+    }
+
+    if (sortBy == "cpu") {
+      return parseInt(a.currentCpu) - parseInt(b.currentCpu);
+    }
+
+    if (sortBy == "memory") {
+      return parseInt(a.residentMemory) - parseInt(b.residentMemory);
+    }
+  });
+
+  if (!sortAscending) {
+    processes.reverse();
+  }
+  return processes;
+}
+
+function sort(by) {
+  sortBy = by;
+  sortAscending = !sortAscending;
+  if (processes) {
+    updateView(sortProcesses(processes));
+  }
+}
+
+window.addEventListener("load", () => {
+  document.getElementsByTagName("thead")[0].addEventListener("click", (event) => {
+    if (event.target.id) {
+      sort(event.target.id);
+    }
+  });
+}, {once: true});

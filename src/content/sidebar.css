@@ -26,6 +26,7 @@ thead, #tbody tr {
   display: table;
   table-layout: fixed;
   width: 100%;
+  cursor: default;
 }
 
 td:nth-child(1) {
