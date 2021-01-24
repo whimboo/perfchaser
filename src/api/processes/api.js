@@ -1,14 +1,14 @@
 const NS_PER_MS = 1000 * 1000;
 
+// From: dom/chrome-webidl/ChromeUtils.webidl
 const PROCESS_TYPES_MAP = {
-  "browser": "Main Process",
-  "extension": "WebExtensions",
-  "preallocated": "Web Content (preallocated)",
-  "privilegedabout": "Privileged Content",
-  "rdd": "Data Decoder",
-  "socket": "Network",
-  "web": "Web Content (shared)",
-  "webIsolated": "Web Content",
+  "browser": "main process",
+  "preallocated": "web content (preallocated)",
+  "privilegedabout": "privileged content",
+  "rdd": "data decoder",
+  "socket": "network",
+  "web": "web content (shared)",
+  "webIsolated": "web content",
 };
 
 var previousSnapshotTime = 0;
