@@ -31,7 +31,7 @@ class TaskManager extends Object {
       case "get-process-list":
         return this.updateProcessInfo();
       case "set-update-interval":
-        time_update_interval = request.interval;
+        this.interval_process_update = request.interval;
         this.createProcessInfoAlarm();
     }
   }
