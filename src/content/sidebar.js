@@ -65,27 +65,22 @@ function sortProcesses(processes) {
     return processes;
   }
 
-  processes.sort(function(a, b) {
-    if (sortBy == "type") {
-      if (a.type < b.type) {
-        return -1;
-      }
-      if (a.type > b.type) {
-        return 1;
-      }
-      return 0;
-    }
-
-    if (sortBy == "pid") {
-      return parseInt(a.pid) - parseInt(b.pid);
-    }
-
-    if (sortBy == "cpu") {
-      return parseInt(a.currentCpu) - parseInt(b.currentCpu);
-    }
-
-    if (sortBy == "memory") {
-      return parseInt(a.residentMemory) - parseInt(b.residentMemory);
+  processes.sort((a, b) => {
+    switch (sortBy) {
+      case "type":
+        if (a.type < b.type) {
+          return -1;
+        }
+        if (a.type > b.type) {
+          return 1;
+        }
+        return 0;
+      case "pid":
+        return a.pid - b.pid;
+      case "cpu":
+        return a.currentCpu - b.currentCpu;
+      case "memory":
+        return a.residentMemory - b.residentMemory;
     }
   });
 
