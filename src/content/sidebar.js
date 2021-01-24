@@ -1,5 +1,6 @@
 var sortBy;
 var sortAscending = false;
+
 // An array of objects representing information about processes.
 var processes;
 
@@ -56,10 +57,6 @@ function updateView(processes) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  browser.runtime.onMessage.addListener(handleMessage);
-});
-
 function sortProcesses(processes) {
   if (!sortBy) {
     return processes;
@@ -104,9 +101,11 @@ function sort(by) {
 }
 
 window.addEventListener("load", () => {
-  document.getElementsByTagName("thead")[0].addEventListener("click", (event) => {
-    if (event.target.id) {
-      sort(event.target.id);
+  browser.runtime.onMessage.addListener(handleMessage);
+
+  document.getElementsByTagName("thead")[0].addEventListener("click", ev => {
+    if (ev.target.id) {
+      sort(ev.target.id);
     }
   });
 }, {once: true});
