@@ -5,7 +5,8 @@ html, body {
 }
 
 table {
-  font-size: .8em;
+  font-family: sans-serif;
+  font-size: .85em;
   border-spacing: 0;
   background-color: var(--in-content-box-background);
   margin: 0;
