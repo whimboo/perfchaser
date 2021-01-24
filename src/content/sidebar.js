@@ -1,11 +1,10 @@
-var sortBy;
+var sortBy = "cpu";
 var sortAscending = false;
 
 // An array of objects representing information about processes.
 var processes;
 
 async function handleMessage(request, sender, sendResponse) {
-
   processes = Array.from(request.processes.values());
   updateView(sortProcesses(processes));
 }
