@@ -91,8 +91,13 @@ function sortProcesses(processes) {
 }
 
 function sort(by) {
-  sortBy = by;
-  sortAscending = !sortAscending;
+  if (sortBy != by) {
+    sortBy = by;
+    sortAscending = false;
+  } else {
+    sortAscending = !sortAscending;
+  }
+
   if (processes) {
     updateView(sortProcesses(processes));
   }
