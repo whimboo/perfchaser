@@ -4,6 +4,19 @@
         "description": "Processes",
         "functions": [
             {
+                "name": "getProcessesForTab",
+                "type": "function",
+                "description": "Get all processes for the specified tab",
+                "parameters": [
+                    {
+                        "name": "tabId",
+                        "type": "integer",
+                        "description": "The tab's id"
+                    }
+                ],
+                "async": true
+            },
+            {
                 "name": "getProcessInfo",
                 "type": "function",
                 "description": "Get information from all processes",

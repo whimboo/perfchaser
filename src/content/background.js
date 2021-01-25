@@ -40,6 +40,7 @@ class TaskManager extends Object {
     this.processes = await browser.processes.getProcessInfo();
 
     return browser.runtime.sendMessage({
+      name: "process-list",
       processes: this.processes,
     });
   }

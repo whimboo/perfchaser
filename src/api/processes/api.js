@@ -1,3 +1,8 @@
+const { E10SUtils } = ChromeUtils.import(
+  "resource://gre/modules/E10SUtils.jsm"
+);
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
 const NS_PER_MS = 1000 * 1000;
 
 // From: dom/chrome-webidl/ChromeUtils.webidl
@@ -111,9 +116,16 @@ class Process extends Object {
 }
 
 var processes = class extends ExtensionAPI {
-  getAPI() {
+  getAPI(context) {
     return {
       processes: {
+        async getProcessesForTab(tabId) {
+          const tab = context.extension.tabManager.get(tabId);
+          return E10SUtils.getBrowserPids(
+            tab.browser,
+            tab.browser.ownerGlobal.docShell.nsILoadContext.useRemoteSubframes
+          );
+        },
         async getProcessInfo() {
           const info = await ChromeUtils.requestProcInfo();
           const now = Cu.now();

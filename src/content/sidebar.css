@@ -30,6 +30,11 @@ thead, #tbody tr {
   cursor: default;
 }
 
+tr.selected td {
+  color: var(--in-content-category-text-selected);
+  background-color: rgba(103, 103, 110, 0.2);
+}
+
 td:nth-child(1) {
   overflow: clip;
   min-width: 110px;
