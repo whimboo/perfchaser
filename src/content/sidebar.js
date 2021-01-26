@@ -67,16 +67,22 @@ function updateView(processes, processesActiveTab) {
       content.appendChild(row);
     }
 
-    if (processesActiveTab && processesActiveTab.includes(process.pid)) {
+    type.firstChild.data = process.type;
+    pid.firstChild.data = process.pid;
+    cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
+    memory.firstChild.data = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
+
+    if (processesActiveTab.includes(process.pid)) {
       row.classList.add("selected");
     } else {
       row.classList.remove("selected");
     }
 
-    type.firstChild.data = process.type;
-    pid.firstChild.data = process.pid;
-    cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
-    memory.firstChild.data = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
+    if (process.currentCpu == 0.0) {
+      row.classList.add("idle");
+    } else {
+      row.classList.remove("idle");
+    }
   });
 
   while (reuseableRow) {

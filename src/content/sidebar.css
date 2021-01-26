@@ -30,9 +30,13 @@ thead, #tbody tr {
   cursor: default;
 }
 
+tr.idle td {
+  color: #888;
+}
+
 tr.selected td {
   color: var(--in-content-category-text-selected);
-  background-color: rgba(103, 103, 110, 0.2);
+  background-color: rgba(176, 176, 187, 0.2);
 }
 
 td:nth-child(1) {
