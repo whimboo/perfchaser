@@ -59,6 +59,8 @@ class Process extends Object {
     this.name = name;
     this.threads = new Map();
 
+    this.isParent = false;
+
     this.totalCpuKernel = 0;
     this.totalCpuUser = 0;
     this.totalCpu = 0;
@@ -84,6 +86,7 @@ class Process extends Object {
     // as part of the parent process (`"browser"`) rather than as part of the individual
     // processes.
     if (info.type == "browser") {
+      process.isParent = true;
       process.residentMemory = info.residentSetSize;
     } else {
       process.residentMemory = info.residentUniqueSize;

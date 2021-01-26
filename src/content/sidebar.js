@@ -72,7 +72,12 @@ function updateView(processes, processesActiveTab) {
     cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
     memory.firstChild.data = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
 
-    if (processesActiveTab.includes(process.pid)) {
+    // Assume that if no processes are listed for the active tab it runs in
+    // the parent process.
+    if (
+      processesActiveTab.includes(process.pid) ||
+      process.isParent && !processesActiveTab.length
+    ) {
       row.classList.add("selected");
     } else {
       row.classList.remove("selected");
