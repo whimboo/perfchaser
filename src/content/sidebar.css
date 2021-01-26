@@ -31,7 +31,7 @@ thead, #tbody tr {
 }
 
 tr.idle td {
-  color: #888;
+  color: #bbb;
 }
 
 tr.selected td {
