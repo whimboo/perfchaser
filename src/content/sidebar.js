@@ -6,11 +6,18 @@ var sortAscending = false;
 // An array of objects representing information about processes.
 var processes;
 var processesActiveTab;
+var selectedProcess;
 
 async function handleMessage(request) {
   switch (request.name) {
     case "process-list":
       processes = Array.from(request.processes.values());
+
+      const pids = processes.map(process => process.pid);
+      if (!pids.includes(selectedProcess)) {
+        selectedProcess = undefined;
+      }
+
       updateView(sortProcesses(processes), processesActiveTab);
       break;
   }
@@ -74,12 +81,19 @@ function updateView(processes, processesActiveTab) {
 
     // Assume that if no processes are listed for the active tab it runs in
     // the parent process.
-    const selected =
+    const active =
       processesActiveTab.includes(process.pid) ||
       process.isParent && !processesActiveTab.length;
-    row.setAttribute("active", selected);
 
+    const selected =
+      process.pid == selectedProcess ||
+      process.isParent && selectedProcess == undefined;
+
+    row.pid = process.pid;
+
+    row.setAttribute("active", active);
     row.setAttribute("idle", process.currentCpu == 0.0);
+    row.setAttribute("selected", selected);
   });
 
   while (reuseableRow) {
@@ -119,6 +133,11 @@ function sortProcesses(processes) {
   return processes;
 }
 
+function selectProcess(pid) {
+  selectedProcess = pid;
+  updateView(sortProcesses(processes), processesActiveTab);
+}
+
 function sort(by) {
   if (sortBy != by) {
     sortBy = by;
@@ -147,5 +166,9 @@ window.addEventListener("load", async () => {
     if (ev.target.id) {
       sort(ev.target.id);
     }
+  });
+
+  document.getElementsByTagName("tbody")[0].addEventListener("click", ev => {
+    selectProcess(ev.target.parentNode.pid);
   });
 }, { once: true });

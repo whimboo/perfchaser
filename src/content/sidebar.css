@@ -15,7 +15,7 @@ thead, #tbody tr {
 }
 
 thead > tr > td {
-  padding: 5px 10px;
+  padding: 7px 10px 4px;
   border: none;
   background-color: var(--in-content-box-background-hover);
   text-align: center;
@@ -28,11 +28,17 @@ thead > tr > td:not(:first-child) {
   border-bottom: 1px solid var(--in-content-border-color);
 }
 
+/* Take scrollbar width into account for aligning 'Memory'  */
+thead td:nth-child(4) {
+  width: 100px;
+  padding-right: 25px;
+}
+
 /* Avoid scrolling the header */
 #tbody {
   display: block;
   overflow-y: scroll;
-  height: 96vh;
+  height: 55vh;
   border-top: 1px solid var(--in-content-border-color);
 }
 
@@ -41,7 +47,7 @@ thead > tr > td:not(:first-child) {
 }
 
 #tbody > tr[active=true] > td {
-  background-color: rgba(108, 142, 253, 0.2);
+  background-color: rgba(52, 95, 235, 0.2);
 }
 
 #tbody > tr[selected=true] > td {
@@ -55,12 +61,6 @@ thead > tr > td:not(:first-child) {
 
 tbody tr:nth-child(even) {
   background-color: rgba(192, 192, 194, 0.2);
-}
-
-/* Take scrollbar width into account for aligning 'Memory'  */
-thead td:nth-child(4) {
-  width: 100px;
-  padding-right: 25px;
 }
 
 td {
@@ -95,4 +95,11 @@ td:nth-child(3) {
 td:nth-child(4) {
   width: 85px;
   text-align: right;
+}
+
+#process-details {
+  height: 40vh;
+  margin: 0;
+  border-top: 1px solid #ccc;
+  background-color: var(--in-content-box-background-hover);
 }
