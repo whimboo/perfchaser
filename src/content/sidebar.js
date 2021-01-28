@@ -74,20 +74,12 @@ function updateView(processes, processesActiveTab) {
 
     // Assume that if no processes are listed for the active tab it runs in
     // the parent process.
-    if (
+    const selected =
       processesActiveTab.includes(process.pid) ||
-      process.isParent && !processesActiveTab.length
-    ) {
-      row.classList.add("selected");
-    } else {
-      row.classList.remove("selected");
-    }
+      process.isParent && !processesActiveTab.length;
+    row.setAttribute("active", selected);
 
-    if (process.currentCpu == 0.0) {
-      row.classList.add("idle");
-    } else {
-      row.classList.remove("idle");
-    }
+    row.setAttribute("idle", process.currentCpu == 0.0);
   });
 
   while (reuseableRow) {
