@@ -18,7 +18,7 @@ async function handleMessage(request) {
         selectedProcess = undefined;
       }
 
-      updateView(processes, processesActiveTab);
+      updateView();
       break;
   }
 }
@@ -28,15 +28,15 @@ async function handleTabActivated(info) {
     return;
   }
   processesActiveTab = await browser.processes.getProcessesForTab(info.tabId);
-  updateView(processes, processesActiveTab);
+  updateView();
 }
 
 async function handleTabUpdated(tabId) {
   processesActiveTab = await browser.processes.getProcessesForTab(tabId);
-  updateView(processes, processesActiveTab);
+  updateView();
 }
 
-function updateView(processes, processesActiveTab) {
+function updateView() {
   const content = document.getElementById("tbody");
   let reuseableRow = content.firstChild;
 
@@ -135,7 +135,7 @@ function sortProcesses(processes) {
 
 function selectProcess(pid) {
   selectedProcess = pid;
-  updateView(processes, processesActiveTab);
+  updateView();
 }
 
 function sort(by) {
@@ -148,7 +148,7 @@ function sort(by) {
 
   if (processes) {
     processes = sortProcesses(processes);
-    updateView(processes, processesActiveTab);
+    updateView();
   }
 }
 
