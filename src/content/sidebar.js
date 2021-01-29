@@ -11,14 +11,14 @@ var selectedProcess;
 async function handleMessage(request) {
   switch (request.name) {
     case "process-list":
-      processes = Array.from(request.processes.values());
+      processes = sortProcesses(Array.from(request.processes.values()));
 
       const pids = processes.map(process => process.pid);
       if (!pids.includes(selectedProcess)) {
         selectedProcess = undefined;
       }
 
-      updateView(sortProcesses(processes), processesActiveTab);
+      updateView(processes, processesActiveTab);
       break;
   }
 }
@@ -28,12 +28,12 @@ async function handleTabActivated(info) {
     return;
   }
   processesActiveTab = await browser.processes.getProcessesForTab(info.tabId);
-  updateView(sortProcesses(processes), processesActiveTab);
+  updateView(processes, processesActiveTab);
 }
 
 async function handleTabUpdated(tabId) {
   processesActiveTab = await browser.processes.getProcessesForTab(tabId);
-  updateView(sortProcesses(processes), processesActiveTab);
+  updateView(processes, processesActiveTab);
 }
 
 function updateView(processes, processesActiveTab) {
@@ -135,7 +135,7 @@ function sortProcesses(processes) {
 
 function selectProcess(pid) {
   selectedProcess = pid;
-  updateView(sortProcesses(processes), processesActiveTab);
+  updateView(processes, processesActiveTab);
 }
 
 function sort(by) {
@@ -147,7 +147,8 @@ function sort(by) {
   }
 
   if (processes) {
-    updateView(sortProcesses(processes));
+    processes = sortProcesses(processes);
+    updateView(processes, processesActiveTab);
   }
 }
 
