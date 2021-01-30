@@ -45,8 +45,17 @@ class Thread extends Object {
     return thread;
   }
 
-  updateDelta(timeDelta) {
-    // TODO
+  updateDelta(timeDelta, previousProcessSnapshot) {
+    const previous = previousProcessSnapshot.threads.get(this.tid);
+    if (!previous) {
+      return;
+    }
+
+    this.currentCpuKernel =
+      (this.totalCpuKernel - previous.totalCpuKernel) / timeDelta;
+    this.currentCpuUser =
+      (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
+    this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
   }
 }
 
@@ -92,10 +101,10 @@ class Process extends Object {
       process.residentMemory = info.residentUniqueSize;
     }
 
-    // info.threads.forEach(entry => {
-    //   const thread = Thread.fromProcessInfo(entry);
-    //   process.threads.set(thread.tid, thread);
-    // });
+    info.threads.forEach(entry => {
+      const thread = Thread.fromProcessInfo(entry);
+      process.threads.set(thread.tid, thread);
+    });
 
     return process;
   }
@@ -112,9 +121,9 @@ class Process extends Object {
       (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
     this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
 
-    // this.threads.forEach(thread => {
-    //   thread.updateDelta(timeDelta);
-    // });
+    this.threads.forEach(thread => {
+      thread.updateDelta(timeDelta, previous);
+    });
   }
 }
 

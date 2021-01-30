@@ -7,7 +7,7 @@ table {
   background-color: var(--in-content-box-background);
 }
 
-thead, #tbody tr {
+thead, tbody tr {
   display: table;
   table-layout: fixed;
   width: 100%;
@@ -29,26 +29,26 @@ thead > tr > td:not(:first-child) {
 }
 
 /* Avoid scrolling the header */
-#tbody {
+tbody {
   display: block;
   overflow-y: scroll;
   border-top: 1px solid var(--in-content-border-color);
 }
 
-#tbody > tr:hover {
-  background-color: var(--in-content-item-hover);
+tbody > tr:hover {
+  background-color: var(--in-content-item-hover) !important;
 }
 
-#tbody > tr[active=true] > td {
+tbody > tr[active=true] > td {
   background-color: rgba(52, 95, 235, 0.2);
 }
 
-#tbody > tr[selected=true] > td {
+tbody > tr[selected=true] > td {
   background-color: var(--in-content-item-selected);
   color: var(--in-content-selected-text);
 }
 
-#tbody > tr[idle=true] > td {
+tbody > tr[idle=true] > td {
   color: #bbb;
 }
 
@@ -75,7 +75,7 @@ td:last-child {
   padding-right: 25px;
 }
 
-#processes-table #tbody {
+#processes-table tbody {
   height: 55vh;
 }
 
@@ -102,11 +102,11 @@ td:last-child {
 
 /* Take scrollbar width into account for aligning 'Memory'  */
 #threads-table thead td:nth-child(3) {
-  width: 85px;
+  width: 80px;
   padding-right: 25px;
 }
 
-#threads-table #tbody {
+#threads-table tbody {
   height: 29vh;
 }
 
@@ -117,12 +117,12 @@ td:last-child {
 }
 
 #threads-table td:nth-child(2) {
-  width: 55px;
+  width: 85px;
   text-align: right;
 }
 
 #threads-table td:nth-child(3) {
-  width: 85px;
+  width: 65px;
   text-align: right;
 }
 

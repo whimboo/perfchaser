@@ -8,17 +8,36 @@ var processes;
 var processesActiveTab;
 var selectedProcess;
 
+var selectedDetailsPane;
+var threads;
+
 async function handleMessage(request) {
   switch (request.name) {
     case "process-list":
       processes = sortProcesses(Array.from(request.processes.values()));
 
       const pids = processes.map(process => process.pid);
+      const parent = processes.filter(process => process.isParent);
       if (!pids.includes(selectedProcess)) {
-        selectedProcess = undefined;
+        selectedProcess = parent[0].pid;
       }
 
-      updateView();
+      updateProcessesView();
+
+      switch (selectedDetailsPane) {
+        case "details":
+          break;
+        case "threads":
+          browser.runtime.sendMessage({
+            name: "get-thread-list",
+            pid: selectedProcess,
+          });
+      }
+      break;
+
+    case "thread-list":
+      threads = sortProcesses(Array.from(request.threads.values()));
+      updateThreadsView();
       break;
   }
 }
@@ -28,16 +47,16 @@ async function handleTabActivated(info) {
     return;
   }
   processesActiveTab = await browser.processes.getProcessesForTab(info.tabId);
-  updateView();
+  updateProcessesView();
 }
 
 async function handleTabUpdated(tabId) {
   processesActiveTab = await browser.processes.getProcessesForTab(tabId);
-  updateView();
+  updateProcessesView();
 }
 
-function updateView() {
-  const content = document.getElementById("tbody");
+function updateProcessesView() {
+  const content = document.getElementById("tbody-processes");
   let reuseableRow = content.firstChild;
 
   processes.forEach(process => {
@@ -71,6 +90,7 @@ function updateView() {
       memory = document.createElement("td");
       memory.appendChild(document.createTextNode(""));
       row.appendChild(memory);
+
       content.appendChild(row);
     }
 
@@ -94,6 +114,53 @@ function updateView() {
     row.setAttribute("active", active);
     row.setAttribute("idle", process.currentCpu == 0.0);
     row.setAttribute("selected", selected);
+  });
+
+  while (reuseableRow) {
+    var nextSibling = reuseableRow.nextSibling;
+    reuseableRow.remove();
+    reuseableRow = nextSibling;
+  }
+}
+
+function updateThreadsView() {
+  const content = document.getElementById("tbody-threads");
+  let reuseableRow = content.firstChild;
+
+  threads.forEach(thread => {
+    let row;
+    let type;
+    let tid;
+    let cpu;
+
+    if (reuseableRow) {
+      row = reuseableRow;
+      type = reuseableRow.firstChild;
+      tid = type.nextSibling;
+      cpu = tid.nextSibling;
+      reuseableRow = reuseableRow.nextSibling;
+    } else {
+      row = document.createElement("tr");
+      type = document.createElement("td");
+      type.appendChild(document.createTextNode(""));
+      row.appendChild(type);
+
+      tid = document.createElement("td");
+      tid.appendChild(document.createTextNode(""));
+      row.appendChild(tid);
+
+      cpu = document.createElement("td");
+      cpu.appendChild(document.createTextNode(""));
+      row.appendChild(cpu);
+
+      content.appendChild(row);
+    }
+
+    type.firstChild.data = thread.name;
+    tid.firstChild.data = thread.tid;
+    cpu.firstChild.data = (thread.currentCpu * 100).toFixed(1);
+
+    row.setAttribute("idle", thread.currentCpu == 0.0);
   });
 
   while (reuseableRow) {
@@ -135,7 +202,8 @@ function sortProcesses(processes) {
 
 function selectProcess(pid) {
   selectedProcess = pid;
-  updateView();
+  updateProcessesView();
+  updateDetailsPane();
 }
 
 function sort(by) {
@@ -148,12 +216,26 @@ function sort(by) {
 
   if (processes) {
     processes = sortProcesses(processes);
-    updateView();
+    updateProcessesView();
+  }
+}
+
+function updateDetailsPane() {
+  switch (selectedDetailsPane) {
+    case "details":
+      break;
+    case "threads":
+      browser.runtime.sendMessage({
+        name: "get-thread-list",
+        pid: selectedProcess,
+      });
   }
 }
 
 function selectDetailsPane(event) {
   const paneName = event.target.name;
+
+  selectedDetailsPane = paneName;
 
   for (const tab of document.getElementsByClassName("tabcontent")) {
     tab.setAttribute("active", tab.id == paneName);
@@ -163,6 +245,8 @@ function selectDetailsPane(event) {
   for (const link of tablinks) {
     link.setAttribute("active", link.name == paneName);
   }
+
+  updateDetailsPane();
 }
 
 window.addEventListener("load", async () => {
