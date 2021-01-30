@@ -28,17 +28,10 @@ thead > tr > td:not(:first-child) {
   border-bottom: 1px solid var(--in-content-border-color);
 }
 
-/* Take scrollbar width into account for aligning 'Memory'  */
-thead td:nth-child(4) {
-  width: 100px;
-  padding-right: 25px;
-}
-
 /* Avoid scrolling the header */
 #tbody {
   display: block;
   overflow-y: scroll;
-  height: 55vh;
   border-top: 1px solid var(--in-content-border-color);
 }
 
@@ -76,30 +69,89 @@ td:last-child {
   text-overflow: ellipsis;
 }
 
-td:nth-child(1) {
+/* Take scrollbar width into account for aligning 'Memory'  */
+#processes-table thead td:nth-child(4) {
+  width: 95px;
+  padding-right: 25px;
+}
+
+#processes-table #tbody {
+  height: 55vh;
+}
+
+#processes-table td:nth-child(1) {
   overflow: clip;
   min-width: 110px;
   text-align: left;
 }
 
-td:nth-child(2) {
+#processes-table td:nth-child(2) {
   width: 55px;
   text-align: right;
 }
 
-td:nth-child(3) {
+#processes-table td:nth-child(3) {
   width: 60px;
   text-align: right;
 }
 
-td:nth-child(4) {
+#processes-table td:nth-child(4) {
+  width: 80px;
+  text-align: right;
+}
+
+/* Take scrollbar width into account for aligning 'Memory'  */
+#threads-table thead td:nth-child(3) {
+  width: 85px;
+  padding-right: 25px;
+}
+
+#threads-table #tbody {
+  height: 29vh;
+}
+
+#threads-table td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+#threads-table td:nth-child(2) {
+  width: 55px;
+  text-align: right;
+}
+
+#threads-table td:nth-child(3) {
   width: 85px;
   text-align: right;
 }
 
-#process-details {
-  height: 40vh;
-  margin: 0;
-  border-top: 1px solid #ccc;
-  background-color: var(--in-content-box-background-hover);
+.tab {
+  font-size: 0.85em;
+  overflow: hidden;
+}
+
+.tab button {
+  margin: 5px;
+  background-color: inherit;
+  cursor: pointer;
+  padding: 2px 16px;
+  transition: 0.3s;
+}
+
+.tab button:hover {
+  background-color: #eee;
+}
+
+.tab button[active=true] {
+  background-color: #ddd;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+}
+
+.tabcontent[active=true] {
+  display: block;
 }

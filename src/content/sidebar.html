@@ -10,7 +10,7 @@
 
     <body>
         <div id="sidebar-content">
-            <table>
+            <table id="processes-table">
                 <thead>
                     <tr>
                         <td id="type">Process Type</td>
@@ -21,8 +21,28 @@
                 </thead>
                 <tbody id="tbody"></tbody>
             </table>
-            <div id="process-details">
+            <div id="process-info">
+                <div class="tab">
+                    <button class="tablinks" name="details">Details</button>
+                    <button class="tablinks" name="threads">Threads</button>
+                </div>
 
+                <div id="details" class="tabcontent">
+                    <p></p>
+                </div>
+
+                <div id="threads" class="tabcontent">
+                    <table id="threads-table">
+                        <thead>
+                            <tr>
+                                <td id="name">Thread Name</td>
+                                <td id="tid">TID</td>
+                                <td id="thread-cpu">% CPU</td>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 

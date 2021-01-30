@@ -152,6 +152,19 @@ function sort(by) {
   }
 }
 
+function selectDetailsPane(event) {
+  const paneName = event.target.name;
+
+  for (const tab of document.getElementsByClassName("tabcontent")) {
+    tab.setAttribute("active", tab.id == paneName);
+  }
+
+  const tablinks = document.getElementsByClassName("tablinks");
+  for (const link of tablinks) {
+    link.setAttribute("active", link.name == paneName);
+  }
+}
+
 window.addEventListener("load", async () => {
   win = await browser.windows.getCurrent();
 
@@ -172,4 +185,10 @@ window.addEventListener("load", async () => {
   document.getElementsByTagName("tbody")[0].addEventListener("click", ev => {
     selectProcess(ev.target.parentNode.pid);
   });
+
+  const detailTabs = document.getElementsByClassName("tablinks");
+  for (tab of detailTabs) {
+    tab.addEventListener("click", selectDetailsPane);
+  }
+  detailTabs[0].click();
 }, { once: true });
