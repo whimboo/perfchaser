@@ -43,7 +43,15 @@ class TaskManager extends Object {
 
     return browser.runtime.sendMessage({
       name: "process-list",
-      processes: this.processes,
+      processes: Array.from(this.processes.values()).map(process => {
+        return {
+          type: process.type,
+          pid: process.pid,
+          isParent: process.isParent,
+          currentCpu: process.currentCpu,
+          residentMemory: process.residentMemory,
+        }
+      }),
     });
   }
 

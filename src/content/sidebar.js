@@ -14,7 +14,7 @@ var threads;
 async function handleMessage(request) {
   switch (request.name) {
     case "process-list":
-      processes = sortProcesses(Array.from(request.processes.values()));
+      processes = sortProcesses(request.processes);
 
       const pids = processes.map(process => process.pid);
       const parent = processes.filter(process => process.isParent);
