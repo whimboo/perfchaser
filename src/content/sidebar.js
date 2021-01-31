@@ -29,6 +29,10 @@ async function handleMessage(request) {
 
       switch (selectedDetailsPane) {
         case "details":
+          browser.runtime.sendMessage({
+            name: "get-process-details",
+            pid: selectedProcess,
+          });
           break;
         case "threads":
           browser.runtime.sendMessage({
@@ -36,6 +40,10 @@ async function handleMessage(request) {
             pid: selectedProcess,
           });
       }
+      break;
+
+    case "process-details":
+      updateProcessDetails(request.details);
       break;
 
     case "thread-list":
@@ -129,6 +137,14 @@ function updateProcessesView() {
     reuseableRow.remove();
     reuseableRow = nextSibling;
   }
+}
+
+function updateProcessDetails(details) {
+  const name = document.getElementById("process-name");
+  const threadCount = document.getElementById("thread-count");
+
+  name.innerText = details.name;
+  threadCount.innerText = details.threadCount;
 }
 
 function updateThreadsView() {
@@ -231,6 +247,10 @@ function sort(by) {
 function updateDetailsPane() {
   switch (selectedDetailsPane) {
     case "details":
+      browser.runtime.sendMessage({
+        name: "get-process-details",
+        pid: selectedProcess,
+      });
       break;
     case "threads":
       browser.runtime.sendMessage({

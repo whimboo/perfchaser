@@ -30,8 +30,10 @@ class TaskManager extends Object {
     switch (request.name) {
       case "get-process-list":
         return this.updateProcessInfo();
+      case "get-process-details":
+        return this.getProcessDetails(request.pid);
       case "get-thread-list":
-        return this.updateThreadInfo(request.pid);
+        return this.getThreadInfo(request.pid);
       case "set-update-interval":
         this.interval_process_update = request.interval;
         this.createProcessInfoAlarm();
@@ -55,7 +57,23 @@ class TaskManager extends Object {
     });
   }
 
-  async updateThreadInfo(pid) {
+  async getProcessDetails(pid) {
+    const process = this.processes.get(pid);
+    if (!process) {
+      return;
+    }
+
+    return browser.runtime.sendMessage({
+      name: "process-details",
+      details: {
+        name: process.name,
+        threadCount: process.threads.size,
+        websites: undefined,
+      },
+    });
+  }
+
+  async getThreadInfo(pid) {
     const process = this.processes.get(pid);
 
     return browser.runtime.sendMessage({

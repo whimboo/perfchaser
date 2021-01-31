@@ -2,50 +2,51 @@
 
 <html>
 
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="sidebar.css" />
-        <script src="sidebar.js"></script>
-    </head>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="sidebar.css" />
+    <script src="sidebar.js"></script>
+  </head>
 
-    <body>
-        <div id="sidebar-content">
-            <table id="processes-table">
-                <thead>
-                    <tr>
-                        <td id="type">Process Type</td>
-                        <td id="pid">PID</td>
-                        <td id="cpu">% CPU</td>
-                        <td id="memory">Memory</td>
-                    </tr>
-                </thead>
-                <tbody id="tbody-processes"></tbody>
-            </table>
-            <div id="process-info">
-                <div class="tab">
-                    <button class="tablinks" name="details">Details</button>
-                    <button class="tablinks" name="threads">Threads</button>
-                </div>
-
-                <div id="details" class="tabcontent">
-                    <p></p>
-                </div>
-
-                <div id="threads" class="tabcontent">
-                    <table id="threads-table">
-                        <thead>
-                            <tr>
-                                <td id="name">Thread Name</td>
-                                <td id="tid">TID</td>
-                                <td id="cpu">% CPU</td>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-threads"></tbody>
-                    </table>
-                </div>
-            </div>
+  <body>
+    <div id="sidebar-content">
+      <table id="processes-table">
+        <thead>
+          <tr>
+            <td id="type">Process Type</td>
+            <td id="pid">PID</td>
+            <td id="cpu">% CPU</td>
+            <td id="memory">Memory</td>
+          </tr>
+        </thead>
+        <tbody id="tbody-processes"></tbody>
+      </table>
+      <div id="process-info">
+        <div class="tab">
+          <button class="tablinks" name="details">Details</button>
+          <button class="tablinks" name="threads">Threads</button>
         </div>
 
-    </body>
+        <div id="details" class="tabcontent">
+          <p>Process Name: <span id="process-name"></span></p>
+          <p>Threads: <span id="thread-count"></span></p>
+        </div>
+
+        <div id="threads" class="tabcontent">
+          <table id="threads-table">
+            <thead>
+              <tr>
+                <td id="name">Thread Name</td>
+                <td id="tid">TID</td>
+                <td id="cpu">% CPU</td>
+              </tr>
+            </thead>
+            <tbody id="tbody-threads"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </body>
 
 </html>

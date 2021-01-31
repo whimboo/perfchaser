@@ -149,9 +149,21 @@ td:last-child {
 
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  padding: 0px 10px;
 }
 
 .tabcontent[active=true] {
   display: block;
+}
+
+.tabcontent p {
+  font-weight: bold;
+}
+
+.tabcontent p span {
+  font-weight: normal;
+}
+
+#details {
+  font-size: 0.85em;
 }
