@@ -1,3 +1,6 @@
+const BYTES_TO_MEGABYTE = 1024 * 1024;
+const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
+
 var win;
 
 var sortBy = "cpu";
@@ -97,7 +100,12 @@ function updateProcessesView() {
     type.firstChild.data = process.type;
     pid.firstChild.data = process.pid;
     cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
-    memory.firstChild.data = `${(process.residentMemory / 1024 / 1024).toFixed(1)} MB`;
+
+    if (process.residentMemory > BYTES_TO_GIGABYTE) {
+      memory.firstChild.data = `${(process.residentMemory / BYTES_TO_GIGABYTE).toFixed(1)} GB`;
+    } else {
+      memory.firstChild.data = `${(process.residentMemory / BYTES_TO_MEGABYTE).toFixed(1)} MB`;
+    }
 
     // Assume that if no processes are listed for the active tab it runs in
     // the parent process.
