@@ -3,7 +3,7 @@ const { E10SUtils } = ChromeUtils.import(
 );
 const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-const NS_PER_MS = 1000 * 1000;
+let extensionContext;
 
 // From: dom/chrome-webidl/ChromeUtils.webidl
 const PROCESS_TYPES_MAP = {
@@ -15,9 +15,6 @@ const PROCESS_TYPES_MAP = {
   "web": "web content (shared)",
   "webIsolated": "web content",
 };
-
-var previousSnapshotTime = 0;
-var previousProcesses = new Map();
 
 let tabFinder = {
   update() {
@@ -40,209 +37,115 @@ let tabFinder = {
   },
 
   /**
-   * Find the <xul:tab> for a window id.
+   * Find the tab id for a window id.
    *
    * This is useful e.g. for reloading or closing tabs.
    *
-   * @return null If the xul:tab could not be found, e.g. if the
-   * windowId is that of a chrome window.
-   * @return {{tabbrowser: <xul:tabbrowser>, tab: <xul.tab>}} The
-   * tabbrowser and tab if the latter could be found.
+   * @return tabId
+   *     The tab id, or null if it could not be found.
    */
   get(id) {
-    let browser = this._map.get(id);
-    if (!browser) {
-      return null;
+    let type = "Frame";
+
+    const browser = this._map.get(id);
+    const tabbrowser = browser?.getTabBrowser();
+
+    let tab = null;
+    if (tabbrowser) {
+      type = "Tab";
+      tab = extensionContext.extension.tabManager.getWrapper(tabbrowser.getTabForBrowser(browser));
     }
-    let tabbrowser = browser.getTabBrowser();
-    if (!tabbrowser) {
-      return {
-        tabbrowser: null,
-        tab: {
-          getAttribute() {
-            return "";
-          },
-          linkedBrowser: browser,
-        },
-      };
-    }
-    return { tabbrowser, tab: tabbrowser.getTabForBrowser(browser) };
+
+    return { type, tab };
   },
 };
 
-class Thread extends Object {
-  constructor(tid, name) {
-    super();
+function updateProcessInfo(process, threads, windows) {
+  process.type = PROCESS_TYPES_MAP[process.type] || process.type;
+  process.isParent = process.type == "main process";
 
-    this.tid = tid;
-    this.name = name;
+  // Resident set size is the total memory used by the process, including shared memory.
+  // Resident unique size is the memory used by the process, without shared memory.
+  // Since all processes share memory with the parent process, we count the shared memory
+  // as part of the parent process rather than as part of the individual processes.
+  process.residentMemory =
+    process.isParent ? process.residentSetSize : process.residentUniqueSize;
 
-    this.totalCpuKernel = 0;
-    this.totalCpuUser = 0;
-    this.totalCpu = 0;
+  if (windows && process.windows && process.type != "extension") {
+    process.windows = process.windows.map(win => {
+      const { type, tab } = tabFinder.get(win.outerWindowId);
+      let displayRank;
 
-    this.currentCpuKernel = null;
-    this.currentCpuUser = null;
-    this.currentCpu = null;
-  }
+      if (tab) {
+        displayRank = 1;
+      } else if (win.isProcessRoot) {
+        displayRank = 2;
+      } else if (win.documentTitle) {
+        displayRank = 3;
+      } else {
+        displayRank = 4;
+      }
 
-  static fromProcessInfo(info) {
-    const thread = new Thread(info.tid, info.name);
-
-    thread.totalCpuKernel = info.cpuKernel;
-    thread.totalCpuUser = info.cpuUser;
-    thread.totalCpu = info.cpuKernel + info.cpuUser;
-
-    return thread;
-  }
-
-  updateDelta(timeDelta, previousProcessSnapshot) {
-    const previous = previousProcessSnapshot.threads.get(this.tid);
-    if (!previous) {
-      return;
-    }
-
-    this.currentCpuKernel =
-      (this.totalCpuKernel - previous.totalCpuKernel) / timeDelta;
-    this.currentCpuUser =
-      (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
-    this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
-  }
-}
-
-class Process extends Object {
-  constructor(pid, type, name) {
-    super();
-
-    this.pid = pid;
-    this.type = type;
-    this.name = name;
-    this.threads = new Map();
-    this.windows = [];
-
-    this.isParent = false;
-
-    this.totalCpuKernel = 0;
-    this.totalCpuUser = 0;
-    this.totalCpu = 0;
-
-    this.currentCpuKernel = null;
-    this.currentCpuUser = null;
-    this.currentCpu = null;
-
-    this.residentMemory = 0;
-  }
-
-  static fromProcessInfo(info) {
-    const type = PROCESS_TYPES_MAP[info.type] || info.type;
-    const process = new Process(info.pid, type, info.filename);
-
-    process.totalCpuKernel = info.cpuKernel;
-    process.totalCpuUser = info.cpuUser;
-    process.totalCpu = info.cpuKernel + info.cpuUser;
-
-    // Resident set size is the total memory used by the process, including shared memory.
-    // Resident unique size is the memory used by the process, without shared memory.
-    // Since all processes share memory with the parent process, we count the shared memory
-    // as part of the parent process (`"browser"`) rather than as part of the individual
-    // processes.
-    if (info.type == "browser") {
-      process.isParent = true;
-      process.residentMemory = info.residentSetSize;
-    } else {
-      process.residentMemory = info.residentUniqueSize;
-    }
-
-    info.threads.forEach(entry => {
-      const thread = Thread.fromProcessInfo(entry);
-      process.threads.set(thread.tid, thread);
+      return {
+        outerWindowId: win.outerWindowId,
+        // Bug 1690644: Structured cloning doesn't support nsIURI.
+        documentURI: win.documentURI.spec,
+        documentTitle: win.documentTitle,
+        isProcessRoot: win.isProcessRoot,
+        isInProcess: win.isInProcess,
+        tabId: tab?.id,
+        type,
+        // A rank used to quickly sort windows.
+        displayRank,
+      };
     });
+  } else {
+    process.windows = [];
+  }
+  process.windowCount = process.windows ? process.windows.length : 0;
 
-    if (info.windows && info.type != "extension") {
-      process.windows = info.windows.map(win => {
-        const tab = tabFinder.get(win.outerWindowId);
-        let type = "Frame";
-        let displayRank;
-
-        if (tab) {
-          type = "Tab";
-          displayRank = 1;
-        } else if (win.isProcessRoot) {
-          displayRank = 2;
-        } else if (win.documentTitle) {
-          displayRank = 3;
-        } else {
-          displayRank = 4;
-        }
-        return {
-          outerWindowId: win.outerWindowId,
-          documentURI: win.documentURI.spec,
-          documentTitle: win.documentTitle,
-          isProcessRoot: win.isProcessRoot,
-          isInProcess: win.isInProcess,
-          type,
-          // A rank used to quickly sort windows.
-          displayRank,
-        };
-      });
-    }
-
-    return process;
+  process.threadCount = process.threads.length;
+  if (!threads) {
+    process.threads = [];
   }
 
-  updateDelta(timeDelta) {
-    const previous = previousProcesses.get(this.pid);
-    if (!previous) {
-      return;
-    }
-
-    this.currentCpuKernel =
-      (this.totalCpuKernel - previous.totalCpuKernel) / timeDelta;
-    this.currentCpuUser =
-      (this.totalCpuUser - previous.totalCpuUser) / timeDelta;
-    this.currentCpu = this.currentCpuKernel + this.currentCpuUser;
-
-    this.threads.forEach(thread => {
-      thread.updateDelta(timeDelta, previous);
-    });
-  }
+  return process;
 }
 
 var processes = class extends ExtensionAPI {
   getAPI(context) {
+    extensionContext = context;
+
     return {
       processes: {
         async getProcessesForTab(tabId) {
-          const tab = context.extension.tabManager.get(tabId);
+          const tab = extensionContext.extension.tabManager.get(tabId);
           return E10SUtils.getBrowserPids(
             tab.browser,
             tab.browser.ownerGlobal.docShell.nsILoadContext.useRemoteSubframes
           );
         },
-        async getProcessInfo() {
-          const info = await ChromeUtils.requestProcInfo();
-          const now = Cu.now();
-          const timeDelta = (now - previousSnapshotTime) * NS_PER_MS;
 
+        async getProcessInfo(threads = false, windows = false) {
+          const processes = [];
+          const timeStamp = Cu.now();
+
+          const info = await ChromeUtils.requestProcInfo();
           tabFinder.update();
 
-          const processes = new Map();
-          const parentProcess = Process.fromProcessInfo(info, true);
-          parentProcess.updateDelta(timeDelta);
-          processes.set(parentProcess.pid, parentProcess);
+          const parentProcess = updateProcessInfo(info, threads, windows);
+          processes.push(parentProcess);
 
-          for (const child of info.children) {
-            const process = Process.fromProcessInfo(child, false);
-            process.updateDelta(timeDelta);
-            processes.set(process.pid, process);
+          for (const process of parentProcess.children) {
+            processes.push(updateProcessInfo(process, threads, windows));
           }
 
-          previousSnapshotTime = now;
-          previousProcesses = processes
-
-          return processes;
-        }
-      }
+          return {
+            processes,
+            timeStamp,
+          }
+        },
+      },
     };
   }
 }

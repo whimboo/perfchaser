@@ -21,8 +21,8 @@ async function handleMessage(request) {
       processes = sortProcesses(request.processes);
 
       const pids = processes.map(process => process.pid);
-      const parent = processes.filter(process => process.isParent);
       if (!pids.includes(selectedProcess)) {
+        const parent = processes.filter(process => process.isParent);
         selectedProcess = parent[0].pid;
       }
 

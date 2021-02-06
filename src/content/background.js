@@ -1,16 +1,23 @@
+const NS_PER_MS = 1000 * 1000;
+
 // TODO: read from settings
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
-
 
 class TaskManager extends Object {
   constructor() {
     super();
 
+    // TODO: Set enabled status based on global setting and selected sidebar
+    // process pane.
+    this.includeThreads = true;
+    this.includeWindows = true;
+
     this.interval_process_update = INTERVAL_PROCESS_UPDATE;
 
-    this.processes = new Map();
+    this.lastSnapshotTime;
+    this.processes = [];
 
-    browser.alarms.onAlarm.addListener(this.updateProcessInfo.bind(this));
+    browser.alarms.onAlarm.addListener(this.refreshProcesses.bind(this));
     browser.runtime.onMessage.addListener(this.handleMessage.bind(this));
 
     this.createProcessInfoAlarm();
@@ -29,7 +36,7 @@ class TaskManager extends Object {
   async handleMessage(request) {
     switch (request.name) {
       case "get-process-list":
-        return this.updateProcessInfo();
+        return this.refreshProcesses();
       case "get-process-details":
         return this.getProcessDetails(request.pid);
       case "get-page-list":
@@ -42,12 +49,56 @@ class TaskManager extends Object {
     }
   }
 
-  async updateProcessInfo() {
-    this.processes = await browser.processes.getProcessInfo();
+  async refreshProcesses() {
+    const { timeStamp, processes } = await browser.processes.getProcessInfo(
+      this.includeThreads,
+      this.includeWindows
+    );
+
+    const timeDelta = (timeStamp - this.lastSnapshotTime) * NS_PER_MS;
+
+    this.lastSnapshotTime = timeStamp;
+
+    this.processes = processes.map(process => {
+      const previousProcess = this.processes.find(p => p.pid == process.pid);
+
+      if (previousProcess) {
+        process.currentCpuKernel =
+          (process.cpuKernel - previousProcess.cpuKernel) / timeDelta;
+        process.currentCpuUser =
+          (process.cpuUser - previousProcess.cpuUser) / timeDelta;
+        process.currentCpu = process.currentCpuKernel + process.currentCpuUser;
+      } else {
+        process.currentCpuKernel = 0;
+        process.currentCpuUser = 0;
+        process.currentCpu = 0;
+      }
+
+      process.threads = process.threads.map(thread => {
+        const previousThread =
+          previousProcess?.threads.find(t => t.tid == thread.tid);
+
+        if (previousThread) {
+          thread.currentCpuKernel =
+            (thread.cpuKernel - previousThread.cpuKernel) / timeDelta;
+          thread.currentCpuUser =
+            (thread.cpuUser - previousThread.cpuUser) / timeDelta;
+          thread.currentCpu = thread.currentCpuKernel + thread.currentCpuUser;
+        } else {
+          thread.currentCpuKernel = 0;
+          thread.currentCpuUser = 0;
+          thread.currentCpu = 0;
+        }
+
+        return thread;
+      });
+
+      return process;
+    });
 
     return browser.runtime.sendMessage({
       name: "process-list",
-      processes: Array.from(this.processes.values()).map(process => {
+      processes: this.processes.map(process => {
         return {
           type: process.type,
           pid: process.pid,
@@ -60,7 +111,7 @@ class TaskManager extends Object {
   }
 
   async getProcessDetails(pid) {
-    const process = this.processes.get(pid);
+    const process = this.processes.find(process => process.pid == pid);
     if (!process) {
       return;
     }
@@ -68,14 +119,14 @@ class TaskManager extends Object {
     return browser.runtime.sendMessage({
       name: "process-details",
       details: {
-        name: process.name,
-        threadCount: process.threads.size,
+        name: process.filename,
+        threadCount: process.threadCount,
       },
     });
   }
 
   async getPageInfo(pid) {
-    const process = this.processes.get(pid);
+    const process = this.processes.find(process => process.pid == pid);
     if (!process) {
       return;
     }
@@ -87,7 +138,7 @@ class TaskManager extends Object {
   }
 
   async getThreadInfo(pid) {
-    const process = this.processes.get(pid);
+    const process = this.processes.find(process => process.pid == pid);
     if (!process) {
       return;
     }

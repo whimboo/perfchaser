@@ -20,7 +20,20 @@
                 "name": "getProcessInfo",
                 "type": "function",
                 "description": "Get information from all processes",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "threads",
+                        "type": "boolean",
+                        "description": "Include information for threads",
+                        "optional": true
+                    },
+                    {
+                        "name": "windows",
+                        "type": "boolean",
+                        "description": "Include information for windows",
+                        "optional": true
+                    }
+                ],
                 "async": true
             }
         ]
