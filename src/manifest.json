@@ -51,11 +51,11 @@
             "content/background.js"
         ]
     },
-    "browser_action": {
-        "default_icon": "icons/perfchaser-32.png",
-        "default_title": "PerfChaser",
-        "default_popup": "content/popup.html"
-    },
+    // "browser_action": {
+    //     "default_icon": "icons/perfchaser-32.png",
+    //     "default_title": "PerfChaser",
+    //     "default_popup": "content/popup.html"
+    // },
     "sidebar_action": {
         "default_title": "PerfChaser",
         "default_panel": "content/sidebar.html",
