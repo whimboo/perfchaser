@@ -6,6 +6,8 @@ resources are displayed in a sidebar, on for each window.
 Please note that the extension is still in early development. That means
 feedback for noticable issues, or missing features is wanted.
 
+![PerfChaser screenshot](docs/images/perfchaser.png)
+
 # Install
 Because PerfChaser makes use of
 [WebExtension Experiments](https://webextensions-experiments.readthedocs.io)
