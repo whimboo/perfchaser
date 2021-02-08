@@ -11,9 +11,9 @@ feedback for noticable issues, or missing features is wanted.
 # Install
 Because PerfChaser makes use of
 [WebExtension Experiments](https://webextensions-experiments.readthedocs.io)
-it cannot be signed by [addons.mozilla.org](https://addons.mozilla.org).
+it **cannot** be signed by [addons.mozilla.org](https://addons.mozilla.org).
 
-As such the following preferences have to be set via `about:preferences`
+As such the following preferences have to be set via `about:config`
 **before** installing the XPI:
 
 * `xpinstall.signatures.required` = `false`
