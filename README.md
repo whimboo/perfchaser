@@ -26,6 +26,16 @@ a browser window.
 Note that only Firefox Nightly and Firefox Developer Edition support the
 installation of WebExtension Experiments.
 
+## Temporary Installation
+In case you want to just test the extension without having it permanently
+installed open `about:debugging` and select `This Nightly` or `This Firefox`
+on the left side. From there you can select the `manifest.rdf` file via
+`Load Temporary Add-on...`.
+
+Note that you also have to set `extensions.experiments.enabled` to `true` first,
+but no changes to `xpinstall.signatures.required` are required. Now the extension
+will kept installed until Firefox gets closed or restarted.
+
 # Contribution
 Everyone is welcome to contribute to the project. It doesn't matter if it's as
 a user of the extension and reporting issues, or when you want to even fix bugs
