@@ -3,6 +3,9 @@ const NS_PER_MS = 1000 * 1000;
 // TODO: read from settings
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
 
+// TODO: read from settings
+const MAX_BUFFER_ENTRIES = 24;
+
 class TaskManager extends Object {
   constructor() {
     super();
@@ -15,12 +18,16 @@ class TaskManager extends Object {
     this.interval_process_update = INTERVAL_PROCESS_UPDATE;
 
     this.lastSnapshotTime;
-    this.processes = [];
+    this.processesBuffer = [];
 
     browser.alarms.onAlarm.addListener(this.refreshProcesses.bind(this));
     browser.runtime.onMessage.addListener(this.handleMessage.bind(this));
 
     this.createProcessInfoAlarm();
+  }
+
+  get currentProcessList() {
+    return this.processesBuffer[this.processesBuffer.length - 1];
   }
 
   createProcessInfoAlarm() {
@@ -59,8 +66,9 @@ class TaskManager extends Object {
 
     this.lastSnapshotTime = timeStamp;
 
-    this.processes = processes.map(process => {
-      const previousProcess = this.processes.find(p => p.pid == process.pid);
+    const mappedProcesses = processes.map(process => {
+      const previousProcess =
+        this.currentProcessList?.find(p => p.pid == process.pid);
 
       if (previousProcess) {
         process.currentCpuKernel =
@@ -96,9 +104,14 @@ class TaskManager extends Object {
       return process;
     });
 
+    this.processesBuffer.push(mappedProcesses);
+    if (this.processesBuffer.length > MAX_BUFFER_ENTRIES) {
+      this.processesBuffer.splice(0, 1);
+    }
+
     return browser.runtime.sendMessage({
       name: "process-list",
-      processes: this.processes.map(process => {
+      processes: mappedProcesses.map(process => {
         return {
           type: process.type,
           pid: process.pid,
@@ -111,7 +124,8 @@ class TaskManager extends Object {
   }
 
   async getProcessDetails(pid) {
-    const process = this.processes.find(process => process.pid == pid);
+    const process =
+      this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
       return;
     }
@@ -126,7 +140,8 @@ class TaskManager extends Object {
   }
 
   async getPageInfo(pid) {
-    const process = this.processes.find(process => process.pid == pid);
+    const process =
+      this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
       return;
     }
@@ -138,7 +153,8 @@ class TaskManager extends Object {
   }
 
   async getThreadInfo(pid) {
-    const process = this.processes.find(process => process.pid == pid);
+    const process =
+      this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
       return;
     }
