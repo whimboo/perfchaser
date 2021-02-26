@@ -106,7 +106,7 @@ class TaskManager extends Object {
 
     this.processesBuffer.push(mappedProcesses);
     if (this.processesBuffer.length > MAX_BUFFER_ENTRIES) {
-      this.processesBuffer.shift();
+      this.processesBuffer.splice(0, 1);
     }
 
     return browser.runtime.sendMessage({
