@@ -153,10 +153,8 @@ function updateProcessesView() {
 }
 
 function updateProcessDetails(details) {
-  const name = document.getElementById("process-name");
   const threadCount = document.getElementById("thread-count");
 
-  name.innerText = details.name;
   threadCount.innerText = details.threadCount;
 }
 
