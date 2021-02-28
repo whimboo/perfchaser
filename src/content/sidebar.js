@@ -153,8 +153,17 @@ function updateProcessesView() {
 }
 
 function updateProcessDetails(details) {
+  const cpuKernel = document.getElementById("cpu-kernel");
+  const cpuUser = document.getElementById("cpu-user");
+  const cpuIdle = document.getElementById("cpu-idle");
   const threadCount = document.getElementById("thread-count");
 
+  const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
+  const cpuUserValue = (details.cpuUser * 100).toFixed(2);
+
+  cpuKernel.innerText = `${cpuKernelValue} %`;
+  cpuUser.innerText = `${cpuUserValue} %`;
+  cpuIdle.innerText = `${Math.max(0, (100 - cpuKernelValue - cpuUserValue).toFixed(2))} %`;
   threadCount.innerText = details.threadCount;
 }
 
