@@ -133,7 +133,8 @@ class TaskManager extends Object {
     return browser.runtime.sendMessage({
       name: "process-details",
       details: {
-        name: process.filename,
+        cpuKernel: process.currentCpuKernel,
+        cpuUser: process.currentCpuUser,
         threadCount: process.threadCount,
       },
     });
