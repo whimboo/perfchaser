@@ -4,7 +4,7 @@ const NS_PER_MS = 1000 * 1000;
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
 
 // TODO: read from settings
-const MAX_BUFFER_ENTRIES = 24;
+const MAX_BUFFER_ENTRIES = 60 / INTERVAL_PROCESS_UPDATE * 5; // 5 minutes
 
 class TaskManager extends Object {
   constructor() {
@@ -130,11 +130,26 @@ class TaskManager extends Object {
       return;
     }
 
+    const history = [];
+    for (const processList of this.processesBuffer) {
+      const process = processList.find(process => process.pid == pid);
+      if (!process) {
+        break;
+      }
+
+      history.push({
+        currentCpuKernel: process.currentCpuKernel,
+        currentCpuUser: process.currentCpuUser,
+        currentCpu: process.currentCpu,
+      });
+    };
+
     return browser.runtime.sendMessage({
       name: "process-details",
       details: {
         cpuKernel: process.currentCpuKernel,
         cpuUser: process.currentCpuUser,
+        history,
         threadCount: process.threadCount,
       },
     });

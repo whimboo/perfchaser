@@ -158,11 +158,35 @@ function updateProcessDetails(details) {
   const cpuIdle = document.getElementById("cpu-idle");
   const threadCount = document.getElementById("thread-count");
 
-  const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
-  const cpuUserValue = (details.cpuUser * 100).toFixed(2);
+  var svg = document.getElementById('history-chart');
+  const chartKernelCpu = document.getElementById("chart-kernel-cpu");
+  const chartUserCpu = document.getElementById("chart-user-cpu");
 
+  const width = svg.clientWidth;
+  const height = svg.clientHeight;
+  const deltaX = Math.round((width - 4) / (60 - 1));
+
+  let currentX = width - 2 + deltaX;
+  const points = details.history.reduceRight((points, item) => {
+    currentX -= deltaX;
+    const kernel_yPos = height - (item.currentCpuKernel * 100).toFixed(0);
+    const user_yPos = kernel_yPos - (item.currentCpuUser * 100).toFixed(0);
+    const new_points = {
+      kernel: points.kernel + `${currentX},${kernel_yPos} `,
+      user: points.user + `${currentX},${user_yPos} `,
+    }
+    return new_points;
+  }, { kernel: "", user: "" });
+
+  chartKernelCpu.setAttributeNS(null, "points", points.kernel);
+  chartUserCpu.setAttributeNS(null, "points", points.user);
+
+  const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
   cpuKernel.innerText = `${cpuKernelValue} %`;
+
+  const cpuUserValue = (details.cpuUser * 100).toFixed(2);
   cpuUser.innerText = `${cpuUserValue} %`;
+
   cpuIdle.innerText = `${Math.max(0, (100 - cpuKernelValue - cpuUserValue).toFixed(2))} %`;
   threadCount.innerText = details.threadCount;
 }

@@ -29,11 +29,17 @@
         </div>
 
         <div id="details" class="tabcontent">
-          <p>System: <span id="cpu-kernel"></span></p>
-          <p>User: <span id="cpu-user"></span></p>
-          <p>Idle: <span id="cpu-idle"></span></p>
-          <hr/>
-          <p>Threads: <span id="thread-count"></span></p>
+          <svg xmlns="http://www.w3.org/2000/svg" id="history-chart">
+            <polyline id="chart-kernel-cpu"/>
+            <polyline id="chart-user-cpu"/>
+          </svg>
+          <div id="details-left">
+            <p>User:<span id="cpu-user"></span></p>
+            <p>System: <span id="cpu-kernel"></span></p>
+            <p>Idle: <span id="cpu-idle"></span></p>
+            <hr />
+            <p>Threads: <span id="thread-count"></span></p>
+          </div>
         </div>
 
         <div id="pages" class="tabcontent">
