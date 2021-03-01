@@ -11,7 +11,7 @@
                 <em:id>{ee87d531-ab17-0a4d-878c-1a8aeff2a524}</em:id>
                 <em:minVersion>67.0</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://raw.githubusercontent.com/whimboo/perfchaser/0.1/perfchaser.xpi</em:updateLink>
+                <em:updateLink>https://github.com/whimboo/perfchaser/releases/download/v0.1/perfchaser-0.1.xpi</em:updateLink>
               </Description>
             </em:targetApplication>
           </Description>
@@ -24,7 +24,7 @@
                 <em:id>{ee87d531-ab17-0a4d-878c-1a8aeff2a524}</em:id>
                 <em:minVersion>67.0</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
-                <em:updateLink>https://raw.githubusercontent.com/whimboo/perfchaser/0.2/perfchaser.xpi</em:updateLink>
+                <em:updateLink>https://github.com/whimboo/perfchaser/releases/download/v0.2/perfchaser-0.2.xpi</em:updateLink>
               </Description>
             </em:targetApplication>
           </Description>
