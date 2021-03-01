@@ -1,0 +1,26 @@
+{
+  "addons": {
+    "perfchaser@hskupin.info": {
+      "updates": [
+        {
+          "version": "0.1",
+          "update_link": "https://github.com/whimboo/perfchaser/releases/download/v0.1/perfchaser-0.1.xpi",
+          "browser_specific_settings": {
+            "gecko": {
+              "strict_min_version": "67"
+            }
+          }
+        },
+        {
+          "version": "0.2",
+          "update_link": "https://github.com/whimboo/perfchaser/releases/download/v0.2/perfchaser-0.2.xpi",
+          "browser_specific_settings": {
+            "gecko": {
+              "strict_min_version": "67"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
