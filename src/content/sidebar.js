@@ -13,7 +13,7 @@ var processes;
 var processesActiveTab;
 var selectedProcess;
 
-var selectedDetailsPane;
+var selectedDetailsPane = "details";
 var pages;
 var threads;
 
@@ -359,5 +359,4 @@ window.addEventListener("load", async () => {
   for (tab of detailTabs) {
     tab.addEventListener("click", selectDetailsPane);
   }
-  detailTabs[0].click();
 }, { once: true });
