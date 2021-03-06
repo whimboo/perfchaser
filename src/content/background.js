@@ -30,10 +30,17 @@ class TaskManager extends Object {
     return this.processesBuffer[this.processesBuffer.length - 1];
   }
 
-  createProcessInfoAlarm() {
+  async createProcessInfoAlarm() {
     if (browser.alarms.get("get-process-info")) {
       browser.alarms.clear("get-process-info");
     }
+
+    // Makes sure we have initial data to compare with when the
+    // first alarm for refreshProcesses is fired.
+    if (this.processesBuffer.length == 0) {
+      await this.updateProcesses();
+    }
+
     browser.alarms.create("get-process-info", {
       when: Date.now(),
       periodInMinutes: this.interval_process_update / 60,
@@ -42,14 +49,6 @@ class TaskManager extends Object {
 
   async handleMessage(request) {
     switch (request.name) {
-      case "get-process-list":
-        return this.refreshProcesses();
-      case "get-process-details":
-        return this.getProcessDetails(request.pid);
-      case "get-page-list":
-        return this.getPageInfo(request.pid);
-      case "get-thread-list":
-        return this.getThreadInfo(request.pid);
       case "set-update-interval":
         this.interval_process_update = request.interval;
         this.createProcessInfoAlarm();
@@ -57,6 +56,14 @@ class TaskManager extends Object {
   }
 
   async refreshProcesses() {
+    await this.updateProcesses();
+
+    return browser.runtime.sendMessage({
+      name: "process-list-updated",
+    });
+  }
+
+  async updateProcesses() {
     const { timeStamp, processes } = await browser.processes.getProcessInfo(
       this.includeThreads,
       this.includeWindows
@@ -108,19 +115,6 @@ class TaskManager extends Object {
     if (this.processesBuffer.length > MAX_BUFFER_ENTRIES) {
       this.processesBuffer.splice(0, 1);
     }
-
-    return browser.runtime.sendMessage({
-      name: "process-list",
-      processes: mappedProcesses.map(process => {
-        return {
-          type: process.type,
-          pid: process.pid,
-          isParent: process.isParent,
-          currentCpu: process.currentCpu,
-          residentMemory: process.residentMemory,
-        }
-      }),
-    });
   }
 
   async getProcessDetails(pid) {
@@ -144,15 +138,12 @@ class TaskManager extends Object {
       });
     };
 
-    return browser.runtime.sendMessage({
-      name: "process-details",
-      details: {
-        cpuKernel: process.currentCpuKernel,
-        cpuUser: process.currentCpuUser,
-        history,
-        threadCount: process.threadCount,
-      },
-    });
+    return {
+      cpuKernel: process.currentCpuKernel,
+      cpuUser: process.currentCpuUser,
+      history,
+      threadCount: process.threadCount,
+    };
   }
 
   async getPageInfo(pid) {
@@ -162,10 +153,7 @@ class TaskManager extends Object {
       return;
     }
 
-    return browser.runtime.sendMessage({
-      name: "page-list",
-      pages: process.windows,
-    });
+    return process.windows;
   }
 
   async getThreadInfo(pid) {
@@ -175,11 +163,8 @@ class TaskManager extends Object {
       return;
     }
 
-    return browser.runtime.sendMessage({
-      name: "thread-list",
-      threads: process.threads,
-    });
+    return process.threads;
   }
 }
 
-const taskManager = new TaskManager();
+var taskManager = new TaskManager();

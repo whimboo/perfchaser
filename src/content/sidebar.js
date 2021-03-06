@@ -1,6 +1,8 @@
 const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
+var backgroundPage;
+var taskManager;
 var win;
 
 var sortBy = "cpu";
@@ -17,8 +19,8 @@ var threads;
 
 async function handleMessage(request) {
   switch (request.name) {
-    case "process-list":
-      processes = sortProcesses(request.processes);
+    case "process-list-updated":
+      processes = sortProcesses(taskManager.currentProcessList);
 
       const pids = processes.map(process => process.pid);
       if (!pids.includes(selectedProcess)) {
@@ -27,46 +29,12 @@ async function handleMessage(request) {
       }
 
       updateProcessesView();
-
-      switch (selectedDetailsPane) {
-        case "details":
-          browser.runtime.sendMessage({
-            name: "get-process-details",
-            pid: selectedProcess,
-          });
-          break;
-        case "pages":
-          browser.runtime.sendMessage({
-            name: "get-page-list",
-            pid: selectedProcess,
-          });
-          break;
-        case "threads":
-          browser.runtime.sendMessage({
-            name: "get-thread-list",
-            pid: selectedProcess,
-          });
-      }
-      break;
-
-    case "process-details":
-      updateProcessDetails(request.details);
-      break;
-
-    case "page-list":
-      pages = Array.from(request.pages.values());
-      pages.sort((a, b) => a.displayRank - b.displayRank);
-      updatePagesView();
-      break;
-
-    case "thread-list":
-      threads = sortProcesses(Array.from(request.threads.values()));
-      updateThreadsView();
-      break;
+      updateDetailsPane();
   }
 }
 
 async function handleTabActivated(info) {
+  // No pre-filtering support for window id yet (Bug 1696763)
   if (info.windowId != win.id) {
     return;
   }
@@ -326,25 +294,24 @@ function sort(by) {
   }
 }
 
-function updateDetailsPane() {
+async function updateDetailsPane() {
   switch (selectedDetailsPane) {
     case "details":
-      browser.runtime.sendMessage({
-        name: "get-process-details",
-        pid: selectedProcess,
-      });
+      const details = await taskManager.getProcessDetails(selectedProcess);
+      updateProcessDetails(details);
       break;
+
     case "pages":
-      browser.runtime.sendMessage({
-        name: "get-page-list",
-        pid: selectedProcess,
-      });
+      pages = await taskManager.getPageInfo(selectedProcess);
+      pages.sort((a, b) => a.displayRank - b.displayRank);
+      updatePagesView();
       break;
+
     case "threads":
-      browser.runtime.sendMessage({
-        name: "get-thread-list",
-        pid: selectedProcess,
-      });
+      threads = await taskManager.getThreadInfo(selectedProcess);
+      threads = sortProcesses(threads);
+      updateThreadsView();
+      break;
   }
 }
 
@@ -366,13 +333,15 @@ function selectDetailsPane(event) {
 }
 
 window.addEventListener("load", async () => {
+  backgroundPage = await browser.runtime.getBackgroundPage();
+  taskManager = backgroundPage.taskManager;
+
   win = await browser.windows.getCurrent();
 
   browser.runtime.onMessage.addListener(handleMessage);
   browser.tabs.onActivated.addListener(handleTabActivated);
   browser.tabs.onUpdated.addListener(handleTabUpdated, { windowId: win.id });
 
-  browser.runtime.sendMessage({ name: "get-process-list" });
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
   processesActiveTab = await browser.processes.getProcessesForTab(tabs[0].id);
 
