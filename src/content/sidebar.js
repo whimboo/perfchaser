@@ -17,6 +17,14 @@ var selectedDetailsPane = "details";
 var pages;
 var threads;
 
+// Cached elements
+var historyChart;
+
+// Cached values to avoid extra calculation and layout flushes
+var historyChartDeltaX;
+var historyChartHeight;
+var historyChartWidth;
+
 async function handleMessage(request) {
   switch (request.name) {
     case "process-list-updated":
@@ -126,19 +134,16 @@ function updateProcessDetails(details) {
   const cpuIdle = document.getElementById("cpu-idle");
   const threadCount = document.getElementById("thread-count");
 
-  var svg = document.getElementById('history-chart');
   const chartKernelCpu = document.getElementById("chart-kernel-cpu");
   const chartUserCpu = document.getElementById("chart-user-cpu");
 
-  const width = svg.clientWidth;
-  const height = svg.clientHeight;
-  const deltaX = Math.round((width - 4) / (60 - 1));
-
-  let currentX = width - 2 + deltaX;
+  let currentX = historyChartWidth - 2 + historyChartDeltaX;
   const points = details.history.reduceRight((points, item) => {
-    currentX -= deltaX;
-    const kernel_yPos = height - (item.currentCpuKernel * 100).toFixed(0);
+    currentX -= historyChartDeltaX;
+    const kernel_yPos =
+      historyChartHeight - (item.currentCpuKernel * 100).toFixed(0);
     const user_yPos = kernel_yPos - (item.currentCpuUser * 100).toFixed(0);
+
     const new_points = {
       kernel: points.kernel + `${currentX},${kernel_yPos} `,
       user: points.user + `${currentX},${user_yPos} `,
@@ -359,4 +364,15 @@ window.addEventListener("load", async () => {
   for (tab of detailTabs) {
     tab.addEventListener("click", selectDetailsPane);
   }
+
+  historyChart = document.getElementById('history-chart');
+  historyChartHeight = historyChart.clientHeight;
+  historyChartWidth = historyChart.clientWidth;
+  historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
 }, { once: true });
+
+window.addEventListener("resize", () => {
+  historyChartWidth = historyChart.clientWidth;
+  historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
+  updateDetailsPane();
+});
