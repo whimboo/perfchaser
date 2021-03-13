@@ -2,11 +2,11 @@
 
 html, body {
   min-width: 300px;
+  font-size: 1.05em;
 }
 
 table {
   font-family: sans-serif;
-  font-size: .85em;
   border-spacing: 0;
   background-color: var(--in-content-box-background);
 }
@@ -83,7 +83,7 @@ td:last-child {
   text-align: center;
   text-transform: uppercase;
   color: #666;
-  font-size: 0.7em;
+  font-size: .9em;
 }
 
 #history hr {
@@ -110,7 +110,7 @@ td:last-child {
 
 /* Take scrollbar width into account for aligning 'Memory'  */
 #processes-table thead td:nth-child(4) {
-  width: 95px;
+  width: 87px;
   padding-right: 25px;
 }
 
@@ -125,17 +125,17 @@ td:last-child {
 }
 
 #processes-table td:nth-child(2) {
-  width: 55px;
+  width: 50px;
   text-align: right;
 }
 
 #processes-table td:nth-child(3) {
-  width: 60px;
+  width: 57px;
   text-align: right;
 }
 
 #processes-table td:nth-child(4) {
-  width: 80px;
+  width: 72px;
   text-align: right;
 }
 
@@ -172,7 +172,7 @@ td:last-child {
 }
 
 #threads-table tbody {
-  height: 20vh;
+  max-height: 20vh;
 }
 
 #threads-table td:nth-child(1) {
@@ -191,8 +191,11 @@ td:last-child {
   text-align: right;
 }
 
+#process-info {
+  max-height: 20vh;
+}
+
 .tab {
-  font-size: 0.85em;
   overflow: hidden;
 }
 
@@ -227,10 +230,6 @@ td:last-child {
 
 .tabcontent p span {
   font-weight: normal;
-}
-
-#details {
-  font-size: 0.8em;
 }
 
 #details-left p {
