@@ -117,7 +117,7 @@ class TaskManager extends Object {
     }
   }
 
-  async getProcessDetails(pid) {
+  getHistory(pid) {
     const process =
       this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
@@ -138,15 +138,24 @@ class TaskManager extends Object {
       });
     };
 
+    return { history };
+  }
+
+  getProcessDetails(pid) {
+    const process =
+      this.currentProcessList?.find(process => process.pid == pid);
+    if (!process) {
+      return;
+    }
+
     return {
       cpuKernel: process.currentCpuKernel,
       cpuUser: process.currentCpuUser,
-      history,
       threadCount: process.threadCount,
     };
   }
 
-  async getPageInfo(pid) {
+  getPageInfo(pid) {
     const process =
       this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
@@ -156,7 +165,7 @@ class TaskManager extends Object {
     return process.windows;
   }
 
-  async getThreadInfo(pid) {
+  getThreadInfo(pid) {
     const process =
       this.currentProcessList?.find(process => process.pid == pid);
     if (!process) {
