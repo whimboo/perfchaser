@@ -10,6 +10,15 @@
 
   <body>
     <div id="sidebar-content">
+      <div id="history">
+        <h1>cpu load</h1>
+        <hr/>
+        <svg xmlns="http://www.w3.org/2000/svg" id="history-chart">
+          <polyline id="chart-kernel-cpu" />
+          <polyline id="chart-user-cpu" />
+        </svg>
+      </div>
+
       <table id="processes-table">
         <thead>
           <tr>
@@ -29,10 +38,6 @@
         </div>
 
         <div id="details" class="tabcontent" active="true">
-          <svg xmlns="http://www.w3.org/2000/svg" id="history-chart">
-            <polyline id="chart-kernel-cpu"/>
-            <polyline id="chart-user-cpu"/>
-          </svg>
           <div id="details-left">
             <p>User:<span id="cpu-user"></span></p>
             <p>System: <span id="cpu-kernel"></span></p>
