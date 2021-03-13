@@ -348,6 +348,7 @@ function selectDetailsPane(event) {
 window.addEventListener("load", async () => {
   backgroundPage = await browser.runtime.getBackgroundPage();
   taskManager = backgroundPage.taskManager;
+  taskManager.refreshProcesses();
 
   win = await browser.windows.getCurrent();
 
