@@ -25,7 +25,7 @@ var historyChartDeltaX;
 var historyChartHeight;
 var historyChartWidth;
 
-async function handleMessage(request) {
+function handleMessage(request) {
   switch (request.name) {
     case "process-list-updated":
       processes = sortProcesses(taskManager.currentProcessList);
@@ -36,8 +36,7 @@ async function handleMessage(request) {
         selectedProcess = parent[0].pid;
       }
 
-      updateProcessesView();
-      updateDetailsPane();
+      updateViews();
   }
 }
 
@@ -47,12 +46,42 @@ async function handleTabActivated(info) {
     return;
   }
   processesActiveTab = await browser.processes.getProcessesForTab(info.tabId);
-  updateProcessesView();
+  updateViews();
 }
 
 async function handleTabUpdated(tabId) {
   processesActiveTab = await browser.processes.getProcessesForTab(tabId);
+  updateViews();
+}
+
+function updateViews() {
+  updateHistoryChart();
   updateProcessesView();
+  updateDetailsPane();
+}
+
+async function updateHistoryChart() {
+  const details = await taskManager.getHistory(selectedProcess);
+
+  const chartKernelCpu = document.getElementById("chart-kernel-cpu");
+  const chartUserCpu = document.getElementById("chart-user-cpu");
+
+  let currentX = historyChartWidth - 2 + historyChartDeltaX;
+  const points = details.history.reduceRight((points, item) => {
+    currentX -= historyChartDeltaX;
+    const kernel_yPos =
+      historyChartHeight - (item.currentCpuKernel * 100).toFixed(0);
+    const user_yPos = kernel_yPos - (item.currentCpuUser * 100).toFixed(0);
+
+    const new_points = {
+      kernel: points.kernel + `${currentX},${kernel_yPos} `,
+      user: points.user + `${currentX},${user_yPos} `,
+    }
+    return new_points;
+  }, { kernel: "", user: "" });
+
+  chartKernelCpu.setAttributeNS(null, "points", points.kernel);
+  chartUserCpu.setAttributeNS(null, "points", points.user);
 }
 
 function updateProcessesView() {
@@ -133,26 +162,6 @@ function updateProcessDetails(details) {
   const cpuUser = document.getElementById("cpu-user");
   const cpuIdle = document.getElementById("cpu-idle");
   const threadCount = document.getElementById("thread-count");
-
-  const chartKernelCpu = document.getElementById("chart-kernel-cpu");
-  const chartUserCpu = document.getElementById("chart-user-cpu");
-
-  let currentX = historyChartWidth - 2 + historyChartDeltaX;
-  const points = details.history.reduceRight((points, item) => {
-    currentX -= historyChartDeltaX;
-    const kernel_yPos =
-      historyChartHeight - (item.currentCpuKernel * 100).toFixed(0);
-    const user_yPos = kernel_yPos - (item.currentCpuUser * 100).toFixed(0);
-
-    const new_points = {
-      kernel: points.kernel + `${currentX},${kernel_yPos} `,
-      user: points.user + `${currentX},${user_yPos} `,
-    }
-    return new_points;
-  }, { kernel: "", user: "" });
-
-  chartKernelCpu.setAttributeNS(null, "points", points.kernel);
-  chartUserCpu.setAttributeNS(null, "points", points.user);
 
   const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
   cpuKernel.innerText = `${cpuKernelValue} %`;
@@ -281,8 +290,7 @@ function sortProcesses(processes) {
 
 function selectProcess(pid) {
   selectedProcess = pid;
-  updateProcessesView();
-  updateDetailsPane();
+  updateViews();
 }
 
 function sort(by) {
