@@ -200,7 +200,7 @@ function updatePagesView() {
       content.appendChild(row);
     }
 
-    url.firstChild.data = page.documentTitle || page.documentURI;
+    url.firstChild.data = page.documentURI;
     type.firstChild.data = page.type;
   });
 
