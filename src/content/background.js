@@ -151,6 +151,8 @@ class TaskManager extends Object {
     return {
       cpuKernel: process.currentCpuKernel,
       cpuUser: process.currentCpuUser,
+      pageCount: process.windows.length,
+      processCount: this.currentProcessList.length,
       threadCount: process.threadCount,
     };
   }

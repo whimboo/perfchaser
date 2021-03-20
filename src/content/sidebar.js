@@ -161,7 +161,9 @@ function updateProcessDetails(details) {
   const cpuKernel = document.getElementById("cpu-kernel");
   const cpuUser = document.getElementById("cpu-user");
   const cpuIdle = document.getElementById("cpu-idle");
+  const processCount = document.getElementById("process-count");
   const threadCount = document.getElementById("thread-count");
+  const pageCount = document.getElementById("page-count");
 
   const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
   cpuKernel.innerText = `${cpuKernelValue} %`;
@@ -170,7 +172,9 @@ function updateProcessDetails(details) {
   cpuUser.innerText = `${cpuUserValue} %`;
 
   cpuIdle.innerText = `${Math.max(0, (100 - cpuKernelValue - cpuUserValue).toFixed(2))} %`;
+  processCount.innerText = details.processCount;
   threadCount.innerText = details.threadCount;
+  pageCount.innerText = details.pageCount;
 }
 
 function updatePagesView() {
