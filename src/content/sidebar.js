@@ -1,6 +1,8 @@
 const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
+var CPUCount;
+
 var backgroundPage;
 var taskManager;
 var win;
@@ -350,6 +352,16 @@ function selectDetailsPane(event) {
 }
 
 window.addEventListener("load", async () => {
+  const info = await browser.processes.getCPUInfo();
+  CPUCount = info.count;
+  const cpuCount = document.getElementById("cpu-count");
+  cpuCount.innerText = CPUCount;
+
+  historyChart = document.getElementById('history-chart');
+  historyChartHeight = historyChart.clientHeight;
+  historyChartWidth = historyChart.clientWidth;
+  historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
+
   backgroundPage = await browser.runtime.getBackgroundPage();
   taskManager = backgroundPage.taskManager;
   taskManager.refreshProcesses();
@@ -377,11 +389,6 @@ window.addEventListener("load", async () => {
   for (tab of detailTabs) {
     tab.addEventListener("click", selectDetailsPane);
   }
-
-  historyChart = document.getElementById('history-chart');
-  historyChartHeight = historyChart.clientHeight;
-  historyChartWidth = historyChart.clientWidth;
-  historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
 }, { once: true });
 
 window.addEventListener("resize", () => {

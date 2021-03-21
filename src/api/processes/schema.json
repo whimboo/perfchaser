@@ -4,6 +4,13 @@
         "description": "Processes",
         "functions": [
             {
+                "name": "getCPUInfo",
+                "type": "function",
+                "description": "Get details about the CPU",
+                "parameters": [],
+                "async": true
+            },
+            {
                 "name": "getProcessesForTab",
                 "type": "function",
                 "description": "Get all processes for the specified tab",
