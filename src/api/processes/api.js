@@ -118,6 +118,10 @@ var processes = class extends ExtensionAPI {
 
     return {
       processes: {
+        async getCPUInfo() {
+          return Services.sysinfo.processInfo;
+        },
+
         async getProcessesForTab(tabId) {
           const tab = extensionContext.extension.tabManager.get(tabId);
           return E10SUtils.getBrowserPids(
