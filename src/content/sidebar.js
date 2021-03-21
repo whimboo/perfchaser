@@ -69,17 +69,20 @@ async function updateHistoryChart() {
   const chartUserCpu = document.getElementById("chart-user-cpu");
 
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
-  const points = details.history.reduceRight((points, item) => {
-    currentX -= historyChartDeltaX;
-    const kernel_yPos =
-      historyChartHeight - (item.currentCpuKernel * 100).toFixed(0);
-    const user_yPos = kernel_yPos - (item.currentCpuUser * 100).toFixed(0);
+  const ratio = historyChartHeight / CPUCount;
 
-    const new_points = {
+  const points = details.history.reduceRight((points, item) => {
+    const kernelCPU = item.currentCpuKernel * ratio;
+    const userCPU = item.currentCpuUser * ratio;
+
+    currentX -= historyChartDeltaX;
+    const kernel_yPos = historyChartHeight - kernelCPU.toFixed(0);
+    const user_yPos = kernel_yPos - userCPU.toFixed(0);
+
+    return {
       kernel: points.kernel + `${currentX},${kernel_yPos} `,
       user: points.user + `${currentX},${user_yPos} `,
     }
-    return new_points;
   }, { kernel: "", user: "" });
 
   chartKernelCpu.setAttributeNS(null, "points", points.kernel);
