@@ -2,6 +2,7 @@ const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
 var CPUCount;
+var os;
 
 var backgroundPage;
 var taskManager;
@@ -13,7 +14,7 @@ var sortAscending = false;
 // An array of objects representing information about processes.
 var processes;
 var processesActiveTab;
-var selectedProcess;
+var selectedProcesses = [];
 
 var selectedDetailsPane = "details";
 var pages;
@@ -31,13 +32,6 @@ function handleMessage(request) {
   switch (request.name) {
     case "process-list-updated":
       processes = sortProcesses(taskManager.currentProcessList);
-
-      const pids = processes.map(process => process.pid);
-      if (!pids.includes(selectedProcess)) {
-        const parent = processes.filter(process => process.isParent);
-        selectedProcess = parent[0].pid;
-      }
-
       updateViews();
   }
 }
@@ -63,7 +57,7 @@ function updateViews() {
 }
 
 async function updateHistoryChart() {
-  const details = await taskManager.getHistory(selectedProcess);
+  const history = await taskManager.getHistory(selectedProcesses);
 
   const chartKernelCpu = document.getElementById("chart-kernel-cpu");
   const chartUserCpu = document.getElementById("chart-user-cpu");
@@ -71,7 +65,7 @@ async function updateHistoryChart() {
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
   const ratio = historyChartHeight / CPUCount;
 
-  const points = details.history.reduceRight((points, item) => {
+  const points = history.reduceRight((points, item) => {
     const kernelCPU = item.currentCpuKernel * ratio;
     const userCPU = item.currentCpuUser * ratio;
 
@@ -145,8 +139,8 @@ function updateProcessesView() {
       process.isParent && !processesActiveTab.length;
 
     const selected =
-      process.pid == selectedProcess ||
-      process.isParent && selectedProcess == undefined;
+      selectedProcesses.includes(process.pid) ||
+      process.isParent && selectedProcesses == [];
 
     row.pid = process.pid;
 
@@ -297,11 +291,6 @@ function sortProcesses(processes) {
   return processes;
 }
 
-function selectProcess(pid) {
-  selectedProcess = pid;
-  updateViews();
-}
-
 function sort(by) {
   if (sortBy != by) {
     sortBy = by;
@@ -319,18 +308,18 @@ function sort(by) {
 async function updateDetailsPane() {
   switch (selectedDetailsPane) {
     case "details":
-      const details = await taskManager.getProcessDetails(selectedProcess);
+      const details = await taskManager.getProcessDetails(selectedProcesses);
       updateProcessDetails(details);
       break;
 
     case "pages":
-      pages = await taskManager.getPageInfo(selectedProcess);
+      pages = await taskManager.getPageInfo(selectedProcesses);
       pages.sort((a, b) => a.displayRank - b.displayRank);
       updatePagesView();
       break;
 
     case "threads":
-      threads = await taskManager.getThreadInfo(selectedProcess);
+      threads = await taskManager.getThreadInfo(selectedProcesses);
       threads = sortProcesses(threads);
       updateThreadsView();
       break;
@@ -355,8 +344,12 @@ function selectDetailsPane(event) {
 }
 
 window.addEventListener("load", async () => {
-  const info = await browser.processes.getCPUInfo();
-  CPUCount = info.count;
+  const cpuInfo = await browser.processes.getCPUInfo();
+  const platformInfo = await browser.runtime.getPlatformInfo();
+
+  CPUCount = cpuInfo.count;
+  os = platformInfo.os;
+
   const cpuCount = document.getElementById("cpu-count");
   cpuCount.innerText = CPUCount;
 
@@ -385,7 +378,23 @@ window.addEventListener("load", async () => {
   });
 
   document.getElementsByTagName("tbody")[0].addEventListener("click", ev => {
-    selectProcess(ev.target.parentNode.pid);
+    const pid = ev.target.parentNode.pid;
+    if (pid === undefined) {
+      return;
+    }
+
+    if (ev.ctrlKey && os !== "mac" || ev.metaKey && os == "mac") {
+      const index = selectedProcesses.indexOf(pid);
+      if (index > -1) {
+        selectedProcesses.splice(index, 1);
+      } else {
+        selectedProcesses.push(pid);
+      }
+    } else {
+      selectedProcesses = [pid];
+    }
+
+    updateViews();
   });
 
   const detailTabs = document.getElementsByClassName("tablinks");
