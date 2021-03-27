@@ -117,64 +117,74 @@ class TaskManager extends Object {
     }
   }
 
-  getHistory(pid) {
-    const process =
-      this.currentProcessList?.find(process => process.pid == pid);
-    if (!process) {
-      return;
+  getHistory(pids = []) {
+    return this.processesBuffer.map(processes => {
+      return processes.reduce((val, proc) => {
+        if (pids.length == 0 || pids.includes(proc.pid)) {
+          val.currentCpuKernel = val.currentCpuKernel + proc.currentCpuKernel;
+          val.currentCpuUser = val.currentCpuUser + proc.currentCpuUser;
+          val.currentCpu = val.currentCpu + proc.currentCpu;
+        }
+        return val;
+      }, { currentCpuKernel: 0, currentCpuUser: 0, currentCpu: 0});
+    });
+  }
+
+  getProcessDetails(pids = []) {
+    let processes;
+    if (pids.length == 0) {
+      processes = this.currentProcessList;
+    } else {
+      processes = this.currentProcessList.filter(
+        process => pids.includes(process.pid)
+      );
     }
 
-    const history = [];
-    for (const processList of this.processesBuffer) {
-      const process = processList.find(process => process.pid == pid);
-      if (!process) {
-        break;
-      }
-
-      history.push({
-        currentCpuKernel: process.currentCpuKernel,
-        currentCpuUser: process.currentCpuUser,
-        currentCpu: process.currentCpu,
-      });
+    const data = {
+      cpuKernel: 0,
+      cpuUser: 0,
+      pageCount: 0,
+      processCount: processes.length,
+      threadCount: 0,
     };
 
-    return { history };
+    return processes.reduce((val, proc) => {
+      val.cpuKernel = val.cpuKernel + proc.currentCpuKernel;
+      val.cpuUser = val.cpuUser + proc.currentCpuUser;
+      val.pageCount = val.pageCount + proc.windows.length;
+      val.threadCount = val.threadCount + proc.threadCount;
+      return val;
+    }, data);
   }
 
-  getProcessDetails(pid) {
-    const process =
-      this.currentProcessList?.find(process => process.pid == pid);
-    if (!process) {
-      return;
+  getPageInfo(pids = []) {
+    let processes;
+    if (pids.length == 0) {
+      processes = this.currentProcessList;
+    } else {
+      processes = this.currentProcessList.filter(
+        process => pids.includes(process.pid)
+      );
     }
 
-    return {
-      cpuKernel: process.currentCpuKernel,
-      cpuUser: process.currentCpuUser,
-      pageCount: process.windows.length,
-      processCount: this.currentProcessList.length,
-      threadCount: process.threadCount,
-    };
+    return processes.reduce((val, proc) => {
+      return val.concat(proc.windows);
+    }, []);
   }
 
-  getPageInfo(pid) {
-    const process =
-      this.currentProcessList?.find(process => process.pid == pid);
-    if (!process) {
-      return;
+  getThreadInfo(pids = []) {
+    let processes;
+    if (pids.length == 0) {
+      processes = this.currentProcessList;
+    } else {
+      processes = this.currentProcessList.filter(
+        process => pids.includes(process.pid)
+      );
     }
 
-    return process.windows;
-  }
-
-  getThreadInfo(pid) {
-    const process =
-      this.currentProcessList?.find(process => process.pid == pid);
-    if (!process) {
-      return;
-    }
-
-    return process.threads;
+    return processes.reduce((val, proc) => {
+      return val.concat(proc.threads);
+    }, []);
   }
 }
 
