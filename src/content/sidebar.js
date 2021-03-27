@@ -2,6 +2,7 @@ const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
 var CPUCount;
+var CPURatio;
 var os;
 
 var backgroundPage;
@@ -63,7 +64,7 @@ async function updateHistoryChart() {
   const chartUserCpu = document.getElementById("chart-user-cpu");
 
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
-  const ratio = historyChartHeight / CPUCount;
+  const ratio = historyChartHeight * CPURatio;
 
   const points = history.reduceRight((points, item) => {
     const kernelCPU = item.currentCpuKernel * ratio;
@@ -170,7 +171,9 @@ function updateProcessDetails(details) {
   const cpuUserValue = (details.cpuUser * 100).toFixed(2);
   cpuUser.innerText = `${cpuUserValue} %`;
 
-  cpuIdle.innerText = `${Math.max(0, (100 - cpuKernelValue - cpuUserValue).toFixed(2))} %`;
+  const idleValue = Math.max(0, 100 / CPURatio - cpuKernelValue - cpuUserValue);
+  cpuIdle.innerText = `${idleValue.toFixed(2)} %`;
+
   processCount.innerText = details.processCount;
   threadCount.innerText = details.threadCount;
   pageCount.innerText = details.pageCount;
@@ -349,6 +352,10 @@ window.addEventListener("load", async () => {
 
   CPUCount = cpuInfo.count;
   os = platformInfo.os;
+
+  // For both MacOS and Linux a 100% CPU load means that a single CPU
+  // is fully used, whereby for Windows it means all available CPUs.
+  CPURatio = os == "win" ? 1 : 1 / CPUCount;
 
   const cpuCount = document.getElementById("cpu-count");
   cpuCount.innerText = CPUCount;
