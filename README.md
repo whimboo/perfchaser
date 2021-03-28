@@ -41,7 +41,7 @@ Everyone is welcome to contribute to the project. It doesn't matter if it's as
 a user of the extension and reporting issues, or when you want to even fix bugs
 and implement new features.
 
-## Development
+# Development
 When modifying the code of the extension it is adviced to make use of the
 [web-ext Node.js package](https://www.npmjs.com/package/web-ext). Running
 Firefox through it will make sure that changes to the code are automatically
@@ -50,3 +50,10 @@ picked-up, and the extension reloaded in the current Firefox instance.
 Use the following command to start Firefox Nightly with the extension running:
 
     npm run start:firefox -- --firefox=nightly
+
+## Building the XPI
+There is also a npm script that builds the XPI file:
+
+    npm run build
+
+Note: Due to the above restrictions signing the extension is not possible yet.
