@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "build": "web-ext build --source-dir src --artifacts-dir . --filename perfchaser.xpi --overwrite-dest",
     "start:firefox": "web-ext run --source-dir ./src/ --pref extensions.experiments.enabled=true"
   }
 }
