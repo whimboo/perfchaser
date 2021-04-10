@@ -24,10 +24,27 @@ class TaskManager extends Object {
     browser.runtime.onMessage.addListener(this.handleMessage.bind(this));
 
     this.createProcessInfoAlarm();
+
+    this._initializedPromise = new Promise(async resolve => {
+      this.cpuInfo = await browser.processes.getCPUInfo();
+      this.platformInfo = await browser.runtime.getPlatformInfo();
+
+      this.cpuRatio = this.os == "win" ? 1 : 1 / this.cpuInfo.count;
+
+      resolve();
+    });
+  }
+
+  get cpuCount() {
+    return this.cpuInfo.count;
   }
 
   get currentProcessList() {
     return this.processesBuffer[this.processesBuffer.length - 1];
+  }
+
+  get os() {
+    return this.platformInfo.os;
   }
 
   async createProcessInfoAlarm() {
@@ -53,6 +70,10 @@ class TaskManager extends Object {
         this.interval_process_update = request.interval;
         this.createProcessInfoAlarm();
     }
+  }
+
+  async ready() {
+    return this._initializedPromise;
   }
 
   async refreshProcesses() {
@@ -189,3 +210,8 @@ class TaskManager extends Object {
 }
 
 var taskManager = new TaskManager();
+
+async function getTaskManager() {
+  await taskManager.ready();
+  return taskManager;
+}
