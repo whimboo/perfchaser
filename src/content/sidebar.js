@@ -1,11 +1,6 @@
 const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
-var CPUCount;
-var CPURatio;
-var os;
-
-var backgroundPage;
 var taskManager;
 var win;
 
@@ -64,7 +59,7 @@ async function updateHistoryChart() {
   const chartUserCpu = document.getElementById("chart-user-cpu");
 
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
-  const ratio = historyChartHeight * CPURatio;
+  const ratio = historyChartHeight * taskManager.cpuRatio;
 
   const points = history.reduceRight((points, item) => {
     const kernelCPU = item.currentCpuKernel * ratio;
@@ -171,7 +166,7 @@ function updateProcessDetails(details) {
   const cpuUserValue = (details.cpuUser * 100).toFixed(2);
   cpuUser.innerText = `${cpuUserValue} %`;
 
-  const idleValue = Math.max(0, 100 / CPURatio - cpuKernelValue - cpuUserValue);
+  const idleValue = Math.max(0, 100 / taskManager.cpuRatio - cpuKernelValue - cpuUserValue);
   cpuIdle.innerText = `${idleValue.toFixed(2)} %`;
 
   processCount.innerText = details.processCount;
@@ -347,27 +342,17 @@ function selectDetailsPane(event) {
 }
 
 window.addEventListener("load", async () => {
-  const cpuInfo = await browser.processes.getCPUInfo();
-  const platformInfo = await browser.runtime.getPlatformInfo();
-
-  CPUCount = cpuInfo.count;
-  os = platformInfo.os;
-
-  // For both MacOS and Linux a 100% CPU load means that a single CPU
-  // is fully used, whereby for Windows it means all available CPUs.
-  CPURatio = os == "win" ? 1 : 1 / CPUCount;
-
-  const cpuCount = document.getElementById("cpu-count");
-  cpuCount.innerText = CPUCount;
-
   historyChart = document.getElementById('history-chart');
   historyChartHeight = historyChart.clientHeight;
   historyChartWidth = historyChart.clientWidth;
   historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
 
-  backgroundPage = await browser.runtime.getBackgroundPage();
-  taskManager = backgroundPage.taskManager;
+  const backgroundPage = await browser.runtime.getBackgroundPage();
+  taskManager = await backgroundPage.getTaskManager();
   taskManager.refreshProcesses();
+
+  const cpuCount = document.getElementById("cpu-count");
+  cpuCount.innerText = await taskManager.cpuCount;
 
   win = await browser.windows.getCurrent();
 
@@ -390,7 +375,10 @@ window.addEventListener("load", async () => {
       return;
     }
 
-    if (ev.ctrlKey && os !== "mac" || ev.metaKey && os == "mac") {
+    if (
+      ev.ctrlKey && taskManager.os !== "mac" ||
+      ev.metaKey && taskManager.os == "mac"
+    ) {
       const index = selectedProcesses.indexOf(pid);
       if (index > -1) {
         selectedProcesses.splice(index, 1);
