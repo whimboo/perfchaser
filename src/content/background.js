@@ -29,7 +29,9 @@ class TaskManager extends Object {
       this.cpuInfo = await browser.processes.getCPUInfo();
       this.platformInfo = await browser.runtime.getPlatformInfo();
 
-      this.cpuRatio = this.os == "win" ? 1 : 1 / this.cpuInfo.count;
+      // On Windows a CPU load value of 100% means that all available CPUs are
+      // under load, whereby on MacOS and Linux it's just for a single CPU.
+      this.loadByCpu = this.os != "win";
 
       resolve();
     });
@@ -91,6 +93,8 @@ class TaskManager extends Object {
     );
 
     const timeDelta = (timeStamp - this.lastSnapshotTime) * NS_PER_MS;
+    const cpuFactor = this.loadByCpu ? 100 : 100 / this.cpuCount;
+    const ratio = cpuFactor / timeDelta;
 
     this.lastSnapshotTime = timeStamp;
 
@@ -100,9 +104,9 @@ class TaskManager extends Object {
 
       if (previousProcess) {
         process.currentCpuKernel =
-          (process.cpuKernel - previousProcess.cpuKernel) / timeDelta;
+          (process.cpuKernel - previousProcess.cpuKernel) * ratio;
         process.currentCpuUser =
-          (process.cpuUser - previousProcess.cpuUser) / timeDelta;
+          (process.cpuUser - previousProcess.cpuUser) * ratio;
         process.currentCpu = process.currentCpuKernel + process.currentCpuUser;
       } else {
         process.currentCpuKernel = 0;
@@ -116,9 +120,9 @@ class TaskManager extends Object {
 
         if (previousThread) {
           thread.currentCpuKernel =
-            (thread.cpuKernel - previousThread.cpuKernel) / timeDelta;
+            (thread.cpuKernel - previousThread.cpuKernel) * ratio;
           thread.currentCpuUser =
-            (thread.cpuUser - previousThread.cpuUser) / timeDelta;
+            (thread.cpuUser - previousThread.cpuUser) * ratio;
           thread.currentCpu = thread.currentCpuKernel + thread.currentCpuUser;
         } else {
           thread.currentCpuKernel = 0;
@@ -164,18 +168,25 @@ class TaskManager extends Object {
     const data = {
       cpuKernel: 0,
       cpuUser: 0,
+      cpuIdle: 0,
       pageCount: 0,
       processCount: processes.length,
       threadCount: 0,
     };
 
-    return processes.reduce((val, proc) => {
+    const entry = processes.reduce((val, proc) => {
       val.cpuKernel = val.cpuKernel + proc.currentCpuKernel;
       val.cpuUser = val.cpuUser + proc.currentCpuUser;
       val.pageCount = val.pageCount + proc.windows.length;
       val.threadCount = val.threadCount + proc.threadCount;
       return val;
     }, data);
+
+    const cpuMaxIdle = this.loadByCpu ? 100 * this.cpuCount : 100;
+    const idleValue = cpuMaxIdle - entry.cpuKernel - entry.cpuUser;
+    entry.cpuIdle = Math.max(0, idleValue);
+
+    return entry;
   }
 
   getPageInfo(pids = []) {
