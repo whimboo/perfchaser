@@ -22,6 +22,7 @@ var historyChart;
 // Cached values to avoid extra calculation and layout flushes
 var historyChartDeltaX;
 var historyChartHeight;
+var historyChartHeighRatio;
 var historyChartWidth;
 
 function handleMessage(request) {
@@ -59,11 +60,10 @@ async function updateHistoryChart() {
   const chartUserCpu = document.getElementById("chart-user-cpu");
 
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
-  const ratio = historyChartHeight * taskManager.cpuRatio;
 
   const points = history.reduceRight((points, item) => {
-    const kernelCPU = item.currentCpuKernel * ratio;
-    const userCPU = item.currentCpuUser * ratio;
+    const kernelCPU = item.currentCpuKernel * historyChartHeighRatio;
+    const userCPU = item.currentCpuUser * historyChartHeighRatio;
 
     currentX -= historyChartDeltaX;
     const kernel_yPos = historyChartHeight - kernelCPU.toFixed(0);
@@ -120,7 +120,7 @@ function updateProcessesView() {
 
     type.firstChild.data = process.type;
     pid.firstChild.data = process.pid;
-    cpu.firstChild.data = (process.currentCpu * 100).toFixed(1);
+    cpu.firstChild.data = process.currentCpu.toFixed(1);
 
     if (process.residentMemory > BYTES_TO_GIGABYTE) {
       memory.firstChild.data = `${(process.residentMemory / BYTES_TO_GIGABYTE).toFixed(1)} GB`;
@@ -160,14 +160,14 @@ function updateProcessDetails(details) {
   const threadCount = document.getElementById("thread-count");
   const pageCount = document.getElementById("page-count");
 
-  const cpuKernelValue = (details.cpuKernel * 100).toFixed(2);
+  const cpuKernelValue = details.cpuKernel.toFixed(2);
   cpuKernel.innerText = `${cpuKernelValue} %`;
 
-  const cpuUserValue = (details.cpuUser * 100).toFixed(2);
+  const cpuUserValue = details.cpuUser.toFixed(2);
   cpuUser.innerText = `${cpuUserValue} %`;
 
-  const idleValue = Math.max(0, 100 / taskManager.cpuRatio - cpuKernelValue - cpuUserValue);
-  cpuIdle.innerText = `${idleValue.toFixed(2)} %`;
+  const cpuIdleValue = details.cpuIdle.toFixed(2);
+  cpuIdle.innerText = `${cpuIdleValue} %`;
 
   processCount.innerText = details.processCount;
   threadCount.innerText = details.threadCount;
@@ -247,7 +247,7 @@ function updateThreadsView() {
 
     type.firstChild.data = thread.name;
     tid.firstChild.data = thread.tid;
-    cpu.firstChild.data = (thread.currentCpu * 100).toFixed(1);
+    cpu.firstChild.data = thread.currentCpu.toFixed(1);
 
     row.setAttribute("idle", thread.currentCpu == 0.0);
   });
@@ -342,14 +342,15 @@ function selectDetailsPane(event) {
 }
 
 window.addEventListener("load", async () => {
+  const backgroundPage = await browser.runtime.getBackgroundPage();
+  taskManager = await backgroundPage.getTaskManager();
+
+  const cpuFactor = taskManager.loadByCpu ? 1 / taskManager.cpuCount : 1;
   historyChart = document.getElementById('history-chart');
   historyChartHeight = historyChart.clientHeight;
   historyChartWidth = historyChart.clientWidth;
   historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
-
-  const backgroundPage = await browser.runtime.getBackgroundPage();
-  taskManager = await backgroundPage.getTaskManager();
-  taskManager.refreshProcesses();
+  historyChartHeighRatio = historyChartHeight * cpuFactor / 100;
 
   const cpuCount = document.getElementById("cpu-count");
   cpuCount.innerText = await taskManager.cpuCount;
@@ -362,6 +363,8 @@ window.addEventListener("load", async () => {
 
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
   processesActiveTab = await browser.processes.getProcessesForTab(tabs[0].id);
+
+  taskManager.refreshProcesses();
 
   document.getElementsByTagName("thead")[0].addEventListener("click", ev => {
     if (ev.target.id) {
