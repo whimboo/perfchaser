@@ -1,14 +1,97 @@
 @import url("chrome://global/skin/in-content/common.css");
 
+:root[platform=linux] {
+  --sidebar-font-size: .87em;
+  --process-info-height: 39vh;
+  --process-info-font-size: 1.05em;
+  --process-info-table-height: 24vh;
+}
+
+:root[platform=mac] {
+  --sidebar-font-size: 1.05em;
+  --process-info-height: 38vh;
+  --process-info-font-size: 1em;
+  --process-info-table-height: 23vh;
+}
+
 html, body {
   min-width: 300px;
-  font-size: 1.05em;
+  font-size: var(--sidebar-font-size);
+}
+
+#sidebar-content {
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 100px auto var(--process-info-height);
+  height: 100%;
+  width: 100%;
+  min-width: 280px;
+}
+
+#history {
+  grid-column: 1/2;
+  grid-row: 1/2;
+  background-color: #fff;
+}
+
+#history h1 {
+  margin: 5px 0;
+  text-align: center;
+  text-transform: uppercase;
+  color: #666;
+  font-size: .9em;
+}
+
+#history hr {
+  margin: 0 10px 2px;
+}
+
+#history-chart {
+  width: 100%;
+  height: 70px;
+  padding: 0 2px;
+}
+
+#history-chart #chart-kernel-cpu {
+  stroke: #d90074;
+  stroke-width: 1px;
+  fill: none;
+}
+
+#history-chart #chart-user-cpu {
+  stroke: #0074d9;
+  stroke-width: 1px;
+  fill: none;
+}
+
+#processes {
+  grid-column: 1/2;
+  grid-row: 2/3;
+  min-height: 100px;
+  max-height: 100%;
+  overflow-y: scroll;
+}
+
+#process-info {
+  grid-column: 1/2;
+  grid-row: 3/4;
+  font-size: var(--process-info-font-size);
 }
 
 table {
+  overflow: scroll;
   font-family: sans-serif;
   border-spacing: 0;
   background-color: var(--in-content-box-background);
+}
+
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: inherit;
 }
 
 thead, tbody tr {
@@ -32,10 +115,8 @@ thead > tr > td:not(:first-child) {
   border-bottom: 1px solid var(--in-content-border-color);
 }
 
-/* Avoid scrolling the header */
 tbody {
   display: block;
-  overflow-y: scroll;
   border-top: 1px solid var(--in-content-border-color);
 }
 
@@ -71,128 +152,6 @@ td {
 
 td:last-child {
   text-overflow: ellipsis;
-}
-
-#history {
-  border: 1px solid rgb(204, 204, 204);
-  background-color: #fff;
-}
-
-#history h1 {
-  margin: 5px 0;
-  text-align: center;
-  text-transform: uppercase;
-  color: #666;
-  font-size: .9em;
-}
-
-#history hr {
-  margin: 0 10px 2px;
-}
-
-#history-chart {
-  width: 100%;
-  height: 70px;
-  padding: 0 2px;
-}
-
-#history-chart #chart-kernel-cpu {
-  stroke: #d90074;
-  stroke-width: 1px;
-  fill: none;
-}
-
-#history-chart #chart-user-cpu {
-  stroke: #0074d9;
-  stroke-width: 1px;
-  fill: none;
-}
-
-/* Take scrollbar width into account for aligning 'Memory'  */
-#processes-table thead td:nth-child(4) {
-  width: 87px;
-  padding-right: 25px;
-}
-
-#processes-table tbody {
-  height: 54vh;
-}
-
-#processes-table td:nth-child(1) {
-  overflow: clip;
-  min-width: 110px;
-  text-align: left;
-}
-
-#processes-table td:nth-child(2) {
-  width: 50px;
-  text-align: right;
-}
-
-#processes-table td:nth-child(3) {
-  width: 57px;
-  text-align: right;
-}
-
-#processes-table td:nth-child(4) {
-  width: 72px;
-  text-align: right;
-}
-
-/* Take scrollbar width into account for aligning 'Memory'  */
-#pages-table thead td:nth-child(2) {
-  width: 75px;
-  padding-right: 25px;
-}
-
-#pages-table tbody {
-  height: 20vh;
-}
-
-#pages-table td:nth-child(1) {
-  overflow: clip;
-  min-width: 110px;
-  text-align: left;
-}
-
-#pages-table tbody td:nth-child(1):hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-#pages-table td:nth-child(2) {
-  width: 65px;
-  text-align: center;
-}
-
-/* Take scrollbar width into account for aligning 'Memory'  */
-#threads-table thead td:nth-child(3) {
-  width: 80px;
-  padding-right: 25px;
-}
-
-#threads-table tbody {
-  max-height: 20vh;
-}
-
-#threads-table td:nth-child(1) {
-  overflow: clip;
-  min-width: 110px;
-  text-align: left;
-}
-
-#threads-table td:nth-child(2) {
-  width: 85px;
-  text-align: right;
-}
-
-#threads-table td:nth-child(3) {
-  width: 65px;
-  text-align: right;
-}
-
-#process-info {
-  max-height: 20vh;
 }
 
 .tab {
@@ -247,4 +206,84 @@ td:last-child {
 
 #details #cpu-user {
   color: #0074d9;
+}
+
+/* Take scrollbar width into account for aligning 'Memory'  */
+#processes table thead td:nth-child(4) {
+  width: 77px;
+}
+
+#processes table td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+#processes table td:nth-child(2) {
+  width: 50px;
+  text-align: right;
+}
+
+#processes table td:nth-child(3) {
+  width: 57px;
+  text-align: right;
+}
+
+#processes table td:nth-child(4) {
+  width: 77px;
+  text-align: right;
+}
+
+/* Take scrollbar width into account for aligning 'Memory'  */
+#pages-table thead td:nth-child(2) {
+  width: 75px;
+  padding-right: 25px;
+}
+
+#pages-table tbody {
+  height: var(--process-info-table-height);
+  overflow-y: scroll;
+}
+
+#pages-table td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+#pages-table tbody td:nth-child(1):hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#pages-table td:nth-child(2) {
+  width: 65px;
+  text-align: center;
+}
+
+/* Take scrollbar width into account for aligning 'Memory'  */
+#threads-table thead td:nth-child(3) {
+  width: 80px;
+  padding-right: 25px;
+}
+
+#threads-table tbody {
+  height: var(--process-info-table-height);
+  overflow-y: scroll;
+}
+
+#threads-table td:nth-child(1) {
+  overflow: clip;
+  min-width: 110px;
+  text-align: left;
+}
+
+#threads-table td:nth-child(2) {
+  width: 85px;
+  text-align: right;
+}
+
+#threads-table td:nth-child(3) {
+  width: 65px;
+  text-align: right;
 }
