@@ -9,7 +9,7 @@
 
 :root[platform=mac] {
   --sidebar-font-size: 1.05em;
-  --process-info-height: 38vh;
+  --process-info-height: 35vh;
   --process-info-font-size: 1em;
   --process-info-table-height: 23vh;
 }
