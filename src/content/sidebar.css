@@ -39,7 +39,7 @@ html, body {
   margin: 5px 0;
   text-align: center;
   text-transform: uppercase;
-  color: #666;
+  color: #333;
   font-size: .9em;
 }
 
@@ -206,11 +206,6 @@ td:last-child {
 
 #details #cpu-user {
   color: #0074d9;
-}
-
-/* Take scrollbar width into account for aligning 'Memory'  */
-#processes table thead td:nth-child(4) {
-  width: 77px;
 }
 
 #processes table td:nth-child(1) {
