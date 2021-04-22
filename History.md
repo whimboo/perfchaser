@@ -1,3 +1,19 @@
+0.4.0 / 2021-04-22
+==================
+
+  * Improve sidebar styles for Linux and Windows platform (#58)
+  * Scale cpu load values to match the ones from the system's task manager (#57)
+  * Fix text color of selected row for Proton changes (#56)
+  * Move retrieval of CPU and platform info to background script (#54)
+  * Convert XPI build command to npm script (#49)
+  * Restrict maximum CPU load to 100% in history chart on Windows (#48)
+  * Support for multiple process selection (#47)
+  * Account for CPU count when drawing history graph (#45)
+  * Show CPU count in history chart's heading. (#44)
+  * Added process and pages count to details pane (#43)
+  * Added code of conduct and .gitignore (#42)
+  * Fix unintentional rename of updates.json to upates.json.
+
 v0.3.0 / 2021-03-14
 ===================
 
