@@ -14,6 +14,13 @@
   --process-info-table-height: 23vh;
 }
 
+:root[platform=win] {
+  --sidebar-font-size: .97em;
+  --process-info-height: 39vh;
+  --process-info-font-size: 1em;
+  --process-info-table-height: 26vh;
+}
+
 html, body {
   min-width: 300px;
   font-size: var(--sidebar-font-size);
