@@ -345,6 +345,8 @@ window.addEventListener("load", async () => {
   const backgroundPage = await browser.runtime.getBackgroundPage();
   taskManager = await backgroundPage.getTaskManager();
 
+  document.documentElement.setAttribute("platform", taskManager.os);
+
   const cpuFactor = taskManager.loadByCpu ? 1 / taskManager.cpuCount : 1;
   historyChart = document.getElementById('history-chart');
   historyChartHeight = historyChart.clientHeight;
