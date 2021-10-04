@@ -122,10 +122,10 @@ function updateProcessesView() {
     pid.firstChild.data = process.pid;
     cpu.firstChild.data = process.currentCpu.toFixed(1);
 
-    if (process.residentMemory > BYTES_TO_GIGABYTE) {
-      memory.firstChild.data = `${(process.residentMemory / BYTES_TO_GIGABYTE).toFixed(1)} GB`;
+    if (process.memory > BYTES_TO_GIGABYTE) {
+      memory.firstChild.data = `${(process.memory / BYTES_TO_GIGABYTE).toFixed(1)} GB`;
     } else {
-      memory.firstChild.data = `${(process.residentMemory / BYTES_TO_MEGABYTE).toFixed(1)} MB`;
+      memory.firstChild.data = `${(process.memory / BYTES_TO_MEGABYTE).toFixed(1)} MB`;
     }
 
     // Assume that if no processes are listed for the active tab it runs in
@@ -279,7 +279,7 @@ function sortProcesses(processes) {
       case "cpu":
         return a.currentCpu - b.currentCpu;
       case "memory":
-        return a.residentMemory - b.residentMemory;
+        return a.memory - b.memory;
     }
   });
 

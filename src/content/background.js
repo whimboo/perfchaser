@@ -114,6 +114,13 @@ class TaskManager extends Object {
         process.currentCpu = 0;
       }
 
+      // Starting with Firefox 94 the memory property improves performance
+      // when retrieving used memory. For older releases keep backward
+      // compatibility.
+      if (typeof(process.memory) == "undefined") {
+        process.memory = process.residentMemory;
+      }
+
       process.threads = process.threads.map(thread => {
         const previousThread =
           previousProcess?.threads.find(t => t.tid == thread.tid);
