@@ -1,3 +1,9 @@
+
+0.5.0 / 2021-10-05
+==================
+
+  * Make use of performance improvements when collecting memory information (#61)
+
 0.4.0 / 2021-04-22
 ==================
 
