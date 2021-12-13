@@ -103,15 +103,9 @@ class TaskManager extends Object {
         this.currentProcessList?.find(p => p.pid == process.pid);
 
       if (previousProcess) {
-        process.currentCpuKernel =
-          (process.cpuKernel - previousProcess.cpuKernel) * ratio;
-        process.currentCpuUser =
-          (process.cpuUser - previousProcess.cpuUser) * ratio;
-        process.currentCpu = process.currentCpuKernel + process.currentCpuUser;
+        process.cpuTotal = (process.cpuTime - previousProcess.cpuTime) * ratio;
       } else {
-        process.currentCpuKernel = 0;
-        process.currentCpuUser = 0;
-        process.currentCpu = 0;
+        process.cpuTotal = 0;
       }
 
       // Starting with Firefox 94 the memory property improves performance
@@ -126,15 +120,9 @@ class TaskManager extends Object {
           previousProcess?.threads.find(t => t.tid == thread.tid);
 
         if (previousThread) {
-          thread.currentCpuKernel =
-            (thread.cpuKernel - previousThread.cpuKernel) * ratio;
-          thread.currentCpuUser =
-            (thread.cpuUser - previousThread.cpuUser) * ratio;
-          thread.currentCpu = thread.currentCpuKernel + thread.currentCpuUser;
+          thread.cpuTotal = (thread.cpuTime - previousThread.cpuTime) * ratio;
         } else {
-          thread.currentCpuKernel = 0;
-          thread.currentCpuUser = 0;
-          thread.currentCpu = 0;
+          thread.cpuTotal = 0;
         }
 
         return thread;
@@ -153,28 +141,21 @@ class TaskManager extends Object {
     return this.processesBuffer.map(processes => {
       return processes.reduce((val, proc) => {
         if (pids.length == 0 || pids.includes(proc.pid)) {
-          val.currentCpuKernel = val.currentCpuKernel + proc.currentCpuKernel;
-          val.currentCpuUser = val.currentCpuUser + proc.currentCpuUser;
-          val.currentCpu = val.currentCpu + proc.currentCpu;
+          val.cpuTotal = val.cpuTotal + proc.cpuTotal;
         }
         return val;
-      }, { currentCpuKernel: 0, currentCpuUser: 0, currentCpu: 0});
+      }, { cpuTotal: 0 });
     });
   }
 
   getProcessDetails(pids = []) {
-    let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    let processes = this.currentProcessList;
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     const data = {
-      cpuKernel: 0,
-      cpuUser: 0,
+      cpuTotal: 0,
       cpuIdle: 0,
       pageCount: 0,
       processCount: processes.length,
@@ -182,28 +163,22 @@ class TaskManager extends Object {
     };
 
     const entry = processes.reduce((val, proc) => {
-      val.cpuKernel = val.cpuKernel + proc.currentCpuKernel;
-      val.cpuUser = val.cpuUser + proc.currentCpuUser;
+      val.cpuTotal = val.cpuTotal + proc.cpuTotal;
       val.pageCount = val.pageCount + proc.windows.length;
       val.threadCount = val.threadCount + proc.threadCount;
       return val;
     }, data);
 
     const cpuMaxIdle = this.loadByCpu ? 100 * this.cpuCount : 100;
-    const idleValue = cpuMaxIdle - entry.cpuKernel - entry.cpuUser;
-    entry.cpuIdle = Math.max(0, idleValue);
+    entry.cpuIdle = Math.max(0, cpuMaxIdle - entry.cpuTotal);
 
     return entry;
   }
 
   getPageInfo(pids = []) {
     let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     return processes.reduce((val, proc) => {
@@ -213,12 +188,8 @@ class TaskManager extends Object {
 
   getThreadInfo(pids = []) {
     let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     return processes.reduce((val, proc) => {

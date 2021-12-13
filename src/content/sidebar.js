@@ -56,27 +56,22 @@ function updateViews() {
 async function updateHistoryChart() {
   const history = await taskManager.getHistory(selectedProcesses);
 
-  const chartKernelCpu = document.getElementById("chart-kernel-cpu");
-  const chartUserCpu = document.getElementById("chart-user-cpu");
+  const chartCpuTotal = document.getElementById("chart-cpu-total");
 
   let currentX = historyChartWidth - 2 + historyChartDeltaX;
 
   const points = history.reduceRight((points, item) => {
-    const kernelCPU = item.currentCpuKernel * historyChartHeighRatio;
-    const userCPU = item.currentCpuUser * historyChartHeighRatio;
+    const cpuTotal = item.cpuTotal * historyChartHeighRatio;
 
     currentX -= historyChartDeltaX;
-    const kernel_yPos = historyChartHeight - kernelCPU.toFixed(0);
-    const user_yPos = kernel_yPos - userCPU.toFixed(0);
+    const cpu_yPos = historyChartHeight - cpuTotal.toFixed(0);
 
     return {
-      kernel: points.kernel + `${currentX},${kernel_yPos} `,
-      user: points.user + `${currentX},${user_yPos} `,
+      cpuTotal: points.cpuTotal + `${currentX},${cpu_yPos} `,
     }
-  }, { kernel: "", user: "" });
+  }, { cpuTotal: "" });
 
-  chartKernelCpu.setAttributeNS(null, "points", points.kernel);
-  chartUserCpu.setAttributeNS(null, "points", points.user);
+  chartCpuTotal.setAttributeNS(null, "points", points.cpuTotal);
 }
 
 function updateProcessesView() {
@@ -120,7 +115,7 @@ function updateProcessesView() {
 
     type.firstChild.data = process.type;
     pid.firstChild.data = process.pid;
-    cpu.firstChild.data = process.currentCpu.toFixed(1);
+    cpu.firstChild.data = process.cpuTotal.toFixed(1);
 
     if (process.memory > BYTES_TO_GIGABYTE) {
       memory.firstChild.data = `${(process.memory / BYTES_TO_GIGABYTE).toFixed(1)} GB`;
@@ -141,7 +136,7 @@ function updateProcessesView() {
     row.pid = process.pid;
 
     row.setAttribute("active", active);
-    row.setAttribute("idle", process.currentCpu == 0.0);
+    row.setAttribute("idle", process.cpuTotal == 0.0);
     row.setAttribute("selected", selected);
   });
 
@@ -153,18 +148,14 @@ function updateProcessesView() {
 }
 
 function updateProcessDetails(details) {
-  const cpuKernel = document.getElementById("cpu-kernel");
-  const cpuUser = document.getElementById("cpu-user");
+  const cpuTotal = document.getElementById("cpu-total");
   const cpuIdle = document.getElementById("cpu-idle");
   const processCount = document.getElementById("process-count");
   const threadCount = document.getElementById("thread-count");
   const pageCount = document.getElementById("page-count");
 
-  const cpuKernelValue = details.cpuKernel.toFixed(2);
-  cpuKernel.innerText = `${cpuKernelValue} %`;
-
-  const cpuUserValue = details.cpuUser.toFixed(2);
-  cpuUser.innerText = `${cpuUserValue} %`;
+  const cpuTotalValue = details.cpuTotal.toFixed(2);
+  cpuTotal.innerText = `${cpuTotalValue} %`;
 
   const cpuIdleValue = details.cpuIdle.toFixed(2);
   cpuIdle.innerText = `${cpuIdleValue} %`;
@@ -247,9 +238,9 @@ function updateThreadsView() {
 
     type.firstChild.data = thread.name;
     tid.firstChild.data = thread.tid;
-    cpu.firstChild.data = thread.currentCpu.toFixed(1);
+    cpu.firstChild.data = thread.cpuTotal.toFixed(1);
 
-    row.setAttribute("idle", thread.currentCpu == 0.0);
+    row.setAttribute("idle", thread.cpuTotal == 0.0);
   });
 
   while (reuseableRow) {
@@ -277,7 +268,7 @@ function sortProcesses(processes) {
       case "pid":
         return a.pid - b.pid;
       case "cpu":
-        return a.currentCpu - b.currentCpu;
+        return a.cpuTotal - b.cpuTotal;
       case "memory":
         return a.memory - b.memory;
     }
