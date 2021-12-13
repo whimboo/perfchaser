@@ -149,13 +149,9 @@ class TaskManager extends Object {
   }
 
   getProcessDetails(pids = []) {
-    let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    let processes = this.currentProcessList;
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     const data = {
@@ -181,12 +177,8 @@ class TaskManager extends Object {
 
   getPageInfo(pids = []) {
     let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     return processes.reduce((val, proc) => {
@@ -196,12 +188,8 @@ class TaskManager extends Object {
 
   getThreadInfo(pids = []) {
     let processes;
-    if (pids.length == 0) {
-      processes = this.currentProcessList;
-    } else {
-      processes = this.currentProcessList.filter(
-        process => pids.includes(process.pid)
-      );
+    if (pids.length > 0) {
+      processes = processes.filter(process => pids.includes(process.pid));
     }
 
     return processes.reduce((val, proc) => {
