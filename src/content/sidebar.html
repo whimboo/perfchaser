@@ -14,8 +14,7 @@
         <h1>cpu load (#: <span id="cpu-count"></span>)</h1>
         <hr/>
         <svg xmlns="http://www.w3.org/2000/svg" id="history-chart">
-          <polyline id="chart-kernel-cpu" />
-          <polyline id="chart-user-cpu" />
+          <polyline id="chart-cpu-total" />
         </svg>
       </div>
 
@@ -42,8 +41,7 @@
 
         <div id="details" class="tabcontent" active="true">
           <div id="details-left">
-            <p>User:<span id="cpu-user"></span></p>
-            <p>System: <span id="cpu-kernel"></span></p>
+            <p>CPU:<span id="cpu-total"></span></p>
             <p>Idle: <span id="cpu-idle"></span></p>
             <hr />
             <p># Processes: <span id="process-count"></span></p>

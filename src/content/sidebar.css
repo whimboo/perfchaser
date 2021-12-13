@@ -60,13 +60,7 @@ html, body {
   padding: 0 2px;
 }
 
-#history-chart #chart-kernel-cpu {
-  stroke: #d90074;
-  stroke-width: 1px;
-  fill: none;
-}
-
-#history-chart #chart-user-cpu {
+#history-chart #chart-cpu-total {
   stroke: #0074d9;
   stroke-width: 1px;
   fill: none;
