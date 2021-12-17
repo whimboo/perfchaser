@@ -1,3 +1,6 @@
+0.6.1 / 2021-12-17
+==================
+  * Fix process filtering for pages and threads view (#69)
 
 0.6.0 / 2021-12-13
 ==================
