@@ -176,7 +176,7 @@ class TaskManager extends Object {
   }
 
   getPageInfo(pids = []) {
-    let processes;
+    let processes = this.currentProcessList;
     if (pids.length > 0) {
       processes = processes.filter(process => pids.includes(process.pid));
     }
@@ -187,7 +187,7 @@ class TaskManager extends Object {
   }
 
   getThreadInfo(pids = []) {
-    let processes;
+    let processes = this.currentProcessList;
     if (pids.length > 0) {
       processes = processes.filter(process => pids.includes(process.pid));
     }
