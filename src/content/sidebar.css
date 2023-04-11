@@ -21,7 +21,7 @@
 }
 
 html, body {
-  min-width: 400px;
+  min-width: 300px;
   font-size: var(--sidebar-font-size);
 }
 
