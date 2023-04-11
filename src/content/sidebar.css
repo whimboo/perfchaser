@@ -1,28 +1,27 @@
-@import url("chrome://global/skin/in-content/common.css");
+:root {
+  --primary-button-background: #0061e0;
+}
 
 :root[platform=linux] {
-  --sidebar-font-size: .87em;
-  --process-info-height: 39vh;
+  --sidebar-font-size: 13px;
   --process-info-font-size: 1.05em;
   --process-info-table-height: 24vh;
 }
 
 :root[platform=mac] {
-  --sidebar-font-size: 1.05em;
-  --process-info-height: 35vh;
+  --sidebar-font-size: 13px;
   --process-info-font-size: 1em;
-  --process-info-table-height: 25vh;
+  --process-info-table-height: 26vh;
 }
 
 :root[platform=win] {
-  --sidebar-font-size: .97em;
-  --process-info-height: 39vh;
+  --sidebar-font-size: 13px;
   --process-info-font-size: 1em;
   --process-info-table-height: 26vh;
 }
 
 html, body {
-  min-width: 300px;
+  min-width: 400px;
   font-size: var(--sidebar-font-size);
 }
 
@@ -30,7 +29,7 @@ html, body {
   position: absolute;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 100px auto var(--process-info-height);
+  grid-template-rows: 100px auto 39vh;
   height: 100%;
   width: 100%;
   min-width: 280px;
@@ -48,10 +47,14 @@ html, body {
   text-transform: uppercase;
   color: #333;
   font-size: .9em;
+  font-weight: lighter;
+  line-height: 1.2;
 }
 
 #history hr {
   margin: 0 10px 2px;
+  border-style: solid none none none;
+  border-color: #d7d7db;
 }
 
 #history-chart {
@@ -84,7 +87,7 @@ table {
   overflow: scroll;
   font-family: sans-serif;
   border-spacing: 0;
-  background-color: var(--in-content-box-background);
+  background-color: #fff;
 }
 
 
@@ -105,7 +108,7 @@ thead, tbody tr {
 thead > tr > td {
   padding: 7px 10px 4px;
   border: none;
-  background-color: var(--in-content-box-background-hover);
+  background-color: #eee;
   text-align: center;
 }
 
@@ -113,16 +116,16 @@ thead > tr > td:not(:first-child) {
   border-inline-start-width: 1px;
   border-inline-start-style: solid;
   border-image: linear-gradient(transparent 0%, transparent 20%, #c1c1c1 20%, #c1c1c1 80%, transparent 80%, transparent 100%) 1 1;
-  border-bottom: 1px solid var(--in-content-border-color);
+  border-bottom: 1px solid rgba(249, 249, 250, 0.2);
 }
 
 tbody {
   display: block;
-  border-top: 1px solid var(--in-content-border-color);
+  border-top: 1px solid rgba(249, 249, 250, 0.2);
 }
 
 tbody > tr:hover {
-  background-color: var(--in-content-item-hover) !important;
+  background-color: color-mix(in srgb, var(--primary-button-background) 20%, transparent) !important;
 }
 
 tbody > tr[active=true] > td {
@@ -130,7 +133,7 @@ tbody > tr[active=true] > td {
 }
 
 tbody > tr[selected=true] > td {
-  background-color: var(--in-content-item-selected);
+  background-color: var(--primary-button-background);
   color: #fff;
 }
 
@@ -145,7 +148,7 @@ tbody tr:nth-child(even) {
 td {
   padding: 5px 10px;
   min-height: 2em;
-  color: var(--in-content-text-color);
+  color: rgb(21, 20, 26);
   max-width: 50vw;
   overflow: hidden;
   white-space: nowrap;
@@ -161,10 +164,14 @@ td:last-child {
 
 .tab button {
   margin: 5px;
+  min-width: 79px;
   background-color: inherit;
   cursor: pointer;
   padding: 2px 16px;
   transition: 0.3s;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 4px;
 }
 
 .tab button:hover {
