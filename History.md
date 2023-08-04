@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 / 2023-08-04
+
+Note that this release requires at minimum Firefox 117.
+
+* Stop importing of Services.jsm which is no longer possible (#78)
+
 ## 0.7.0 / 2023-04-11
 
 * Fixed font sizes by removing dependency on common.css (#53)
