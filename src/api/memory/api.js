@@ -1,7 +1,5 @@
 var memory = class extends ExtensionAPI {
   getAPI() {
-    const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
     const memSrv = Cc["@mozilla.org/memory-reporter-manager;1"]
       .getService(Ci.nsIMemoryReporterManager);
 
