@@ -1,6 +1,8 @@
-const { E10SUtils } = ChromeUtils.import(
-  "resource://gre/modules/E10SUtils.jsm"
-);
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
+});
 
 let extensionContext;
 
@@ -123,7 +125,7 @@ var processes = class extends ExtensionAPI {
 
         async getProcessesForTab(tabId) {
           const tab = extensionContext.extension.tabManager.get(tabId);
-          return E10SUtils.getBrowserPids(
+          return lazy.E10SUtils.getBrowserPids(
             tab.browser,
             tab.browser.ownerGlobal.docShell.nsILoadContext.useRemoteSubframes
           );
