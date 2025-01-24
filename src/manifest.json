@@ -1,61 +1,44 @@
 {
-    "manifest_version": 2,
-    "name": "PerfChaser",
-    "version": "0.8.0",
-    "description": "",
-    "homepage_url": "https://github.com/whimboo/perfchaser",
-    "icons": {
-        "48": "icons/perfchaser-48.png"
-    },
-    "applications": {
-        "gecko": {
-            "id": "perfchaser@hskupin.info",
-            "strict_min_version": "117.0",
-            "update_url": "https://raw.githubusercontent.com/whimboo/perfchaser/master/updates.json"
-        }
-    },
-    "permissions": [
-        "activeTab",
-        "alarms"
-    ],
-    "experiment_apis": {
-        "memory": {
-            "schema": "api/memory/schema.json",
-            "parent": {
-                "scopes": [
-                    "addon_parent"
-                ],
-                "script": "api/memory/api.js",
-                "paths": [
-                    [
-                        "memory"
-                    ]
-                ]
-            }
-        },
-        "processes": {
-            "schema": "api/processes/schema.json",
-            "parent": {
-                "scopes": [
-                    "addon_parent"
-                ],
-                "script": "api/processes/api.js",
-                "paths": [
-                    [
-                        "processes"
-                    ]
-                ]
-            }
-        }
-    },
-    "background": {
-        "scripts": [
-            "content/background.js"
-        ]
-    },
-    "sidebar_action": {
-        "default_title": "PerfChaser",
-        "default_panel": "content/sidebar.html",
-        "default_icon": "icons/perfchaser-32.png"
+  "manifest_version": 2,
+  "name": "PerfChaser",
+  "version": "0.8.1",
+  "description": "",
+  "homepage_url": "https://github.com/whimboo/perfchaser",
+  "icons": {
+    "48": "icons/perfchaser-48.png"
+  },
+  "applications": {
+    "gecko": {
+      "id": "perfchaser@hskupin.info",
+      "strict_min_version": "128",
+      "update_url": "https://raw.githubusercontent.com/whimboo/perfchaser/master/updates.json"
     }
+  },
+  "permissions": ["activeTab", "alarms"],
+  "experiment_apis": {
+    "memory": {
+      "schema": "api/memory/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "api/memory/api.js",
+        "paths": [["memory"]]
+      }
+    },
+    "processes": {
+      "schema": "api/processes/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "script": "api/processes/api.js",
+        "paths": [["processes"]]
+      }
+    }
+  },
+  "background": {
+    "scripts": ["content/background.js"]
+  },
+  "sidebar_action": {
+    "default_title": "PerfChaser",
+    "default_panel": "content/sidebar.html",
+    "default_icon": "icons/perfchaser-32.png"
+  }
 }
