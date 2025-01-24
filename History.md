@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 / 2025-01-24
+
+Note that this release requires at minimum Firefox 128.
+
+* Use ESM module import because JSM modules can no longer be imported (#83)
+
 ## 0.8.0 / 2023-08-04
 
 Note that this release requires at minimum Firefox 117.
