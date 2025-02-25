@@ -29,7 +29,7 @@ installation of WebExtension Experiments.
 ## Temporary Installation
 In case you want to just test the extension without having it permanently
 installed open `about:debugging` and select `This Nightly` or `This Firefox`
-on the left side. From there you can select the `manifest.rdf` file via
+on the left side. From there you can select the `src/manifest.json` file via
 `Load Temporary Add-on...`.
 
 Note that you also have to set `extensions.experiments.enabled` to `true` first,
