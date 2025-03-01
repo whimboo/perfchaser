@@ -1,6 +1,5 @@
 const NS_PER_MS = 1000 * 1000;
 
-// TODO: read from settings
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
 
 // TODO: read from settings
@@ -10,8 +9,6 @@ class TaskManager extends Object {
   constructor() {
     super();
 
-    // TODO: Set enabled status based on global setting and selected sidebar
-    // process pane.
     this.includeThreads = true;
     this.includeWindows = true;
 
@@ -71,6 +68,17 @@ class TaskManager extends Object {
       case "set-update-interval":
         this.interval_process_update = request.interval;
         this.createProcessInfoAlarm();
+        break;
+
+      case "set-include-threads":
+        this.includeThreads = !this.includeThreads;
+        await this.refreshProcesses();
+        break;
+
+      case "set-include-windows":
+        this.includeWindows = !this.includeWindows;
+        await this.refreshProcesses();
+        break;
     }
   }
 
