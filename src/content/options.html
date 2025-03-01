@@ -7,19 +7,27 @@
 </head>
 
 <body>
-  <label>Interval (s):</label>
-  <input id="update-interval-slider" type="range" min="1" max="5" value="5"/>
-  <br/>
-  <input id="update-interval-value" type="text" readonly="true"/>
-  <br/>
-
-  <label>Transfer of Pages (Windows):</label>
-  <input id="transfer-pages" type="checkbox" checked/>
-  <br/>
-  <label>Transfer of Threads:</label>
-  <input id="transfer-threads" type="checkbox" checked/>
-  <br/>
-
+    <div class="options-container">
+    <div class="option-row">
+      <label>Update Interval (s):</label>
+      <input id="update-interval-slider" type="range" min="1" max="5" value="5"/>
+      <input id="update-interval-value" type="text" readonly/>
+    </div>
+  
+    <div class="option-row">
+      <label class="checkbox-label">
+        Transfer Pages (Windows)
+        <input id="transfer-pages" type="checkbox" checked/>
+      </label>
+    </div>
+  
+    <div class="option-row">
+      <label class="checkbox-label">
+        Transfer Threads
+        <input id="transfer-threads" type="checkbox" checked/>
+      </label>
+    </div>
+  </div>
   <script src="options.js"></script>
 </body>
 
