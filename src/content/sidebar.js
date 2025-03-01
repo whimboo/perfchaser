@@ -396,7 +396,7 @@ window.addEventListener("load", async () => {
   const popupContainer = document.getElementById("popup-container");
   let popupLoaded = false;
 
-  document.getElementById("settings-button").addEventListener("click", async () => {
+  document.getElementById("options-button").addEventListener("click", async () => {
     if (!popupLoaded) {
       try {
         const response = await fetch(browser.runtime.getURL("content/options.html"));

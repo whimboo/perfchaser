@@ -291,7 +291,7 @@ td:last-child {
   text-align: right;
 }
 
-#settings-button {
+#options-button {
   position: absolute;
   top: 5px;
   left: 5px;
@@ -300,14 +300,14 @@ td:last-child {
   z-index: 100;
 }
 
-#settings-button img {
+#options-button img {
     width: 16px;
     height: 16px;
     filter: invert(30%);
     transition: filter 0.2s ease;
 }
 
-#settings-button:hover img {
+#options-button:hover img {
     filter: invert(0%);
 }
 
