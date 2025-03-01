@@ -290,3 +290,36 @@ td:last-child {
   width: 65px;
   text-align: right;
 }
+
+#settings-button {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 24px;
+  height: 24px;
+  z-index: 100;
+}
+
+#settings-button img {
+    width: 16px;
+    height: 16px;
+    filter: invert(30%);
+    transition: filter 0.2s ease;
+}
+
+#settings-button:hover img {
+    filter: invert(0%);
+}
+
+#popup-container {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 100%;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 101;
+  padding: 10px;
+  box-sizing: border-box;
+}

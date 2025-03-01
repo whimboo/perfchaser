@@ -392,6 +392,30 @@ window.addEventListener("load", async () => {
   for (tab of detailTabs) {
     tab.addEventListener("click", selectDetailsPane);
   }
+
+  const popupContainer = document.getElementById("popup-container");
+  let popupLoaded = false;
+
+  document.getElementById("settings-button").addEventListener("click", async () => {
+    if (!popupLoaded) {
+      try {
+        const response = await fetch(browser.runtime.getURL("content/options.html"));
+        const popupContent = await response.text();
+        popupContainer.innerHTML = popupContent;
+
+        const script = document.createElement('script');
+        script.src = browser.runtime.getURL("content/options.js");
+        document.head.appendChild(script);
+
+        popupLoaded = true;
+      } catch (error) {
+        console.error("Failed to fetch options.html:", error);
+        return;
+      }
+    }
+
+    popupContainer.style.display = popupContainer.style.display === "none" ? "block" : "none";
+  });
 }, { once: true });
 
 window.addEventListener("resize", () => {
