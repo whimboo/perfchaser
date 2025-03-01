@@ -423,3 +423,14 @@ window.addEventListener("resize", () => {
   historyChartDeltaX = Math.round((historyChartWidth - 4) / (60 - 1));
   updateDetailsPane();
 });
+
+document.addEventListener("click", (event) => {
+  const popupContainer = document.getElementById("popup-container");
+  const optionsButton = document.getElementById("options-button");
+
+  if (popupContainer.style.display === "block" && 
+      !popupContainer.contains(event.target) && 
+      !optionsButton.contains(event.target)) {
+    popupContainer.style.display = "none";
+  }
+});
