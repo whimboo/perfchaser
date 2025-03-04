@@ -2,9 +2,6 @@ const NS_PER_MS = 1000 * 1000;
 
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
 
-// TODO: read from settings
-const MAX_BUFFER_ENTRIES = 60 / INTERVAL_PROCESS_UPDATE * 5; // 5 minutes
-
 class TaskManager extends Object {
   constructor() {
     super();
@@ -13,6 +10,7 @@ class TaskManager extends Object {
     this.includeWindows = true;
 
     this.interval_process_update = INTERVAL_PROCESS_UPDATE;
+    this.updateMaxBufferEntries();
 
     this.lastSnapshotTime;
     this.processesBuffer = [];
@@ -46,6 +44,10 @@ class TaskManager extends Object {
     return this.platformInfo.os;
   }
 
+  updateMaxBufferEntries() {
+    MAX_BUFFER_ENTRIES = 60 / this.interval_process_update * 5; // 5 minutes
+  }
+
   async createProcessInfoAlarm() {
     if (browser.alarms.get("get-process-info")) {
       browser.alarms.clear("get-process-info");
@@ -67,6 +69,7 @@ class TaskManager extends Object {
     switch (request.name) {
       case "set-update-interval":
         this.interval_process_update = request.interval;
+        this.updateMaxBufferEntries();
         this.createProcessInfoAlarm();
         break;
 
