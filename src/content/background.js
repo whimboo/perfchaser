@@ -2,6 +2,8 @@ const NS_PER_MS = 1000 * 1000;
 
 const INTERVAL_PROCESS_UPDATE = 5; // seconds
 
+const MAX_BUFFER_ENTRIES = 60 / INTERVAL_PROCESS_UPDATE * 5; // 5 minutes
+
 class TaskManager extends Object {
   constructor() {
     super();
@@ -10,7 +12,7 @@ class TaskManager extends Object {
     this.includeWindows = true;
 
     this.interval_process_update = INTERVAL_PROCESS_UPDATE;
-    this.updateMaxBufferEntries();
+    this.max_buffer_entries = MAX_BUFFER_ENTRIES;
 
     this.lastSnapshotTime;
     this.processesBuffer = [];
@@ -45,7 +47,7 @@ class TaskManager extends Object {
   }
 
   updateMaxBufferEntries() {
-    MAX_BUFFER_ENTRIES = 60 / this.interval_process_update * 5; // 5 minutes
+    this.max_buffer_entries = 300 / this.interval_process_update;
   }
 
   async createProcessInfoAlarm() {
@@ -143,7 +145,7 @@ class TaskManager extends Object {
     });
 
     this.processesBuffer.push(mappedProcesses);
-    if (this.processesBuffer.length > MAX_BUFFER_ENTRIES) {
+    if (this.processesBuffer.length > this.max_buffer_entries) {
       this.processesBuffer.splice(0, 1);
     }
   }
