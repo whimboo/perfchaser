@@ -1,4 +1,8 @@
-# Changelog
+## 0.8.2 / 2025-09-09
+
+* Calculate CPU idle value based on total CPU load
+* Replace usage of Cu.now with ChromeUtils.now (#90)
+* chore: fix typo manifest.rdf to src/manifest.json in README (#87)
 
 ## 0.8.1 / 2025-01-24
 
