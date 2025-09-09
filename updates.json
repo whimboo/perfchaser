@@ -100,6 +100,15 @@
               "strict_min_version": "128"
             }
           }
+        },
+        {
+          "version": "0.8.2",
+          "update_link": "https://github.com/whimboo/perfchaser/releases/download/v0.8.2/perfchaser-0.8.2.xpi",
+          "browser_specific_settings": {
+            "gecko": {
+              "strict_min_version": "128"
+            }
+          }
         }
       ]
     }
