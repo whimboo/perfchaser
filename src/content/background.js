@@ -169,8 +169,7 @@ class TaskManager extends Object {
       return val;
     }, data);
 
-    const cpuMaxIdle = this.loadByCpu ? 100 * this.cpuCount : 100;
-    entry.cpuIdle = Math.max(0, cpuMaxIdle - entry.cpuTotal);
+    entry.cpuIdle = Math.max(0, 100 - entry.cpuTotal);
 
     return entry;
   }
