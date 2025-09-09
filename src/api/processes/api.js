@@ -133,7 +133,8 @@ var processes = class extends ExtensionAPI {
 
         async getProcessInfo(threads = false, windows = false) {
           const processes = [];
-          const timeStamp = Cu.now();
+          // TODO: Remove fallback once Firefox 143 is no longer supported.
+          const timeStamp = ChromeUtils.now?.() || Cu.now();
 
           const info = await ChromeUtils.requestProcInfo();
           tabFinder.update();
