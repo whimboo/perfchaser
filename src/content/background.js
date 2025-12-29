@@ -156,27 +156,32 @@ class TaskManager extends Object {
   }
 
   getProcessDetails(pids = []) {
-    let processes = this.currentProcessList;
-    if (pids.length > 0) {
-      processes = processes.filter(process => pids.includes(process.pid));
-    }
+    const processes = this.currentProcessList;
 
     const data = {
-      cpuTotal: 0,
       cpuIdle: 0,
+      cpuTotal: 0,
+      cpuTotalAllProcesses: 0,
       pageCount: 0,
       processCount: processes.length,
       threadCount: 0,
     };
 
     const entry = processes.reduce((val, proc) => {
-      val.cpuTotal = val.cpuTotal + proc.cpuTotal;
-      val.pageCount = val.pageCount + proc.windows.length;
-      val.threadCount = val.threadCount + proc.threadCount;
+      val.cpuTotalAllProcesses += proc.cpuTotal;
+
+      if (pids.length == 0 || pids.includes(proc.pid)) {
+        // The following data applies only to the
+        // selected processes if there are any.
+        val.cpuTotal += proc.cpuTotal;
+        val.pageCount += proc.windows.length;
+        val.threadCount += proc.threadCount;
+      }
+
       return val;
     }, data);
 
-    entry.cpuIdle = Math.max(0, 100 - entry.cpuTotal);
+    entry.cpuIdle = Math.max(0, 100 - entry.cpuTotalAllProcesses);
 
     return entry;
   }
