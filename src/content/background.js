@@ -81,9 +81,16 @@ class TaskManager extends Object {
   async refreshProcesses() {
     await this.updateProcesses();
 
-    return browser.runtime.sendMessage({
-      name: "process-list-updated",
-    });
+    try {
+      await browser.runtime.sendMessage({
+        name: "process-list-updated",
+      });
+    } catch (error) {
+      // Ignore connection errors when sidebar is not open
+      if (!error.message.includes("Receiving end does not exist")) {
+        throw error;
+      }
+    }
   }
 
   async updateProcesses() {
