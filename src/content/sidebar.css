@@ -1,4 +1,26 @@
 :root {
+  /* Background colors */
+  --bg-primary: #fff;
+  --bg-secondary: #eee;
+  --bg-tertiary: #ddd;
+  --bg-stripe: rgba(192, 192, 194, 0.2);
+  --bg-active-process: rgba(52, 95, 235, 0.2);
+
+  /* Text colors */
+  --text-primary: rgb(21, 20, 26);
+  --text-heading: #333;
+  --text-idle: #bbb;
+  --text-selected: #fff;
+
+  /* Border colors */
+  --border-primary: #d7d7db;
+  --border-secondary: rgba(249, 249, 250, 0.2);
+  --border-gradient: #c1c1c1;
+
+  /* Accent colors */
+  --color-cpu-chart: #0074d9;
+  --color-cpu-kernel: #d90074;
+  --color-cpu-user: #0074d9;
   --primary-button-background: #0061e0;
 }
 
@@ -20,9 +42,33 @@
   --process-info-table-height: 26vh;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode background colors */
+    --bg-primary: #1c1b22;
+    --bg-secondary: #42414d;
+    --bg-tertiary: #52525e;
+    --bg-stripe: rgba(255, 255, 255, 0.05);
+    --bg-active-process: rgba(52, 95, 235, 0.3);
+
+    /* Dark mode text colors */
+    --text-primary: #fbfbfe;
+    --text-heading: #fbfbfe;
+    --text-idle: #8f8f9d;
+    --text-selected: #fff;
+
+    /* Dark mode border colors */
+    --border-primary: #52525e;
+    --border-secondary: rgba(249, 249, 250, 0.1);
+    --border-gradient: #52525e;
+  }
+}
+
 html, body {
   min-width: 300px;
   font-size: var(--sidebar-font-size);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 #sidebar-content {
@@ -33,19 +79,20 @@ html, body {
   height: 100%;
   width: 100%;
   min-width: 280px;
+  background-color: var(--bg-primary);
 }
 
 #history {
   grid-column: 1/2;
   grid-row: 1/2;
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
 
 #history h1 {
   margin: 5px 0;
   text-align: center;
   text-transform: uppercase;
-  color: #333;
+  color: var(--text-heading);
   font-size: .9em;
   font-weight: lighter;
   line-height: 1.2;
@@ -54,7 +101,7 @@ html, body {
 #history hr {
   margin: 0 10px 2px;
   border-style: solid none none none;
-  border-color: #d7d7db;
+  border-color: var(--border-primary);
 }
 
 #history-chart {
@@ -64,7 +111,7 @@ html, body {
 }
 
 #history-chart #chart-cpu-total {
-  stroke: #0074d9;
+  stroke: var(--color-cpu-chart);
   stroke-width: 1px;
   fill: none;
 }
@@ -87,7 +134,7 @@ table {
   overflow: scroll;
   font-family: sans-serif;
   border-spacing: 0;
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
 
 
@@ -108,20 +155,20 @@ thead, tbody tr {
 thead > tr > td {
   padding: 7px 10px 4px;
   border: none;
-  background-color: #eee;
+  background-color: var(--bg-secondary);
   text-align: center;
 }
 
 thead > tr > td:not(:first-child) {
   border-inline-start-width: 1px;
   border-inline-start-style: solid;
-  border-image: linear-gradient(transparent 0%, transparent 20%, #c1c1c1 20%, #c1c1c1 80%, transparent 80%, transparent 100%) 1 1;
-  border-bottom: 1px solid rgba(249, 249, 250, 0.2);
+  border-image: linear-gradient(transparent 0%, transparent 20%, var(--border-gradient) 20%, var(--border-gradient) 80%, transparent 80%, transparent 100%) 1 1;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 tbody {
   display: block;
-  border-top: 1px solid rgba(249, 249, 250, 0.2);
+  border-top: 1px solid var(--border-secondary);
 }
 
 tbody > tr:hover {
@@ -129,26 +176,26 @@ tbody > tr:hover {
 }
 
 tbody > tr[active=true] > td {
-  background-color: rgba(52, 95, 235, 0.2);
+  background-color: var(--bg-active-process);
 }
 
 tbody > tr[selected=true] > td {
   background-color: var(--primary-button-background);
-  color: #fff;
+  color: var(--text-selected);
 }
 
 tbody > tr[idle=true] > td {
-  color: #bbb;
+  color: var(--text-idle);
 }
 
 tbody tr:nth-child(even) {
-  background-color: rgba(192, 192, 194, 0.2);
+  background-color: var(--bg-stripe);
 }
 
 td {
   padding: 5px 10px;
   min-height: 2em;
-  color: rgb(21, 20, 26);
+  color: var(--text-primary);
   max-width: 50vw;
   overflow: hidden;
   white-space: nowrap;
@@ -172,14 +219,15 @@ td:last-child {
   font-weight: 600;
   border: 1px solid transparent;
   border-radius: 4px;
+  color: var(--text-primary);
 }
 
 .tab button:hover {
-  background-color: #eee;
+  background-color: var(--bg-secondary);
 }
 
 .tab button[active=true] {
-  background-color: #ddd;
+  background-color: var(--bg-tertiary);
 }
 
 .tabcontent {
@@ -209,11 +257,11 @@ td:last-child {
 }
 
 #details #cpu-kernel {
-  color: #d90074;
+  color: var(--color-cpu-kernel);
 }
 
 #details #cpu-user {
-  color: #0074d9;
+  color: var(--color-cpu-user);
 }
 
 #processes table td:nth-child(1) {
