@@ -55,7 +55,7 @@
     --bg-secondary: #42414d;
     --bg-tertiary: #52525e;
     --bg-stripe: rgba(255, 255, 255, 0.05);
-    --bg-active-process: rgba(52, 95, 235, 0.3);
+    --bg-active-process: rgba(255, 255, 255, 0.08);
 
     /* Dark mode text colors */
     --text-primary: #fbfbfe;
