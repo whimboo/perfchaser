@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        firefox-version: [latest-nightly, latest-devedition]
+      fail-fast: false
+
+    name: test (firefox-${{ matrix.firefox-version }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache Firefox
+        id: cache-firefox
+        uses: actions/cache@v4
+        with:
+          path: /opt/hostedtoolcache/firefox/${{ matrix.firefox-version }}
+          key: firefox-${{ matrix.firefox-version }}-${{ runner.os }}
+
+      - name: Set up Firefox ${{ matrix.firefox-version }}
+        if: steps.cache-firefox.outputs.cache-hit != 'true'
+        uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: ${{ matrix.firefox-version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: xvfb-run --auto-servernum npm test
+        env:
+          FIREFOX_BINARY: /opt/hostedtoolcache/firefox/${{ matrix.firefox-version }}/x64/firefox
+          DISPLAY: :99
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots-${{ matrix.firefox-version }}
+          path: test/screenshots/
+          if-no-files-found: ignore
