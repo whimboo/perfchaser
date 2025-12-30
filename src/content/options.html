@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="options.css" />
+</head>
+
+<body>
+    <div class="options-container">
+    <div class="option-row">
+      <label>Update Interval (s):</label>
+      <input id="update-interval-slider" type="range" min="1" max="5" value="5"/>
+      <input id="update-interval-value" type="text" readonly/>
+    </div>
+  
+    <div class="option-row">
+      <label class="checkbox-label">
+        Transfer Pages (Windows)
+        <input id="transfer-pages" type="checkbox" checked/>
+      </label>
+    </div>
+  
+    <div class="option-row">
+      <label class="checkbox-label">
+        Transfer Threads
+        <input id="transfer-threads" type="checkbox" checked/>
+      </label>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+
+</html>
