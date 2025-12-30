@@ -1,6 +1,16 @@
 {
+  "type": "module",
   "scripts": {
     "build": "web-ext build --source-dir src --artifacts-dir . --filename perfchaser.xpi --overwrite-dest",
-    "start:firefox": "web-ext run --source-dir ./src/ --pref extensions.experiments.enabled=true"
+    "start:firefox": "web-ext run --source-dir ./src/ --pref extensions.experiments.enabled=true",
+    "test": "mocha --config test/.mocharc.json",
+    "test:watch": "mocha --config test/.mocharc.json --watch",
+    "test:debug": "mocha --config test/.mocharc.json --inspect-brk"
+  },
+  "devDependencies": {
+    "web-ext": "^9.2.0",
+    "mocha": "^10.2.0",
+    "selenium-webdriver": "^4.16.0",
+    "geckodriver": "^4.2.0"
   }
 }
