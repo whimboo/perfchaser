@@ -22,6 +22,12 @@
   --color-cpu-kernel: #d90074;
   --color-cpu-user: #0074d9;
   --primary-button-background: #0061e0;
+
+  /* CPU usage level colors */
+  --cpu-low: #106710;
+  --cpu-medium: #dac017;
+  --cpu-high: #de710b;
+  --cpu-very-high: #cf6228;
 }
 
 :root[platform=linux] {
@@ -61,6 +67,12 @@
     --border-primary: #52525e;
     --border-secondary: rgba(249, 249, 250, 0.1);
     --border-gradient: #52525e;
+
+    /* CPU usage level colors for dark mode */
+    --cpu-low: #c1d7c1;
+    --cpu-medium: #c3bc8d;
+    --cpu-high: #b3a699;
+    --cpu-very-high: #fa2828;
   }
 }
 
@@ -186,6 +198,28 @@ tbody > tr[selected=true] > td {
 
 tbody > tr[idle=true] > td {
   color: var(--text-idle);
+}
+
+tbody > tr[cpu-level=low] > td:nth-child(3) {
+  color: var(--cpu-low);
+}
+
+tbody > tr[cpu-level=medium] > td:nth-child(3) {
+  color: var(--cpu-medium);
+}
+
+tbody > tr[cpu-level=high] > td:nth-child(3) {
+  color: var(--cpu-high);
+}
+
+tbody > tr[cpu-level=very-high] > td:nth-child(3) {
+  color: var(--cpu-very-high);
+  font-weight: bold;
+}
+
+tbody > tr[idle=true] > td:nth-child(3) {
+  color: var(--text-idle);
+  font-weight: normal;
 }
 
 tbody tr:nth-child(even) {

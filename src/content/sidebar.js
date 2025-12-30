@@ -1,6 +1,11 @@
 const BYTES_TO_MEGABYTE = 1024 * 1024;
 const BYTES_TO_GIGABYTE = BYTES_TO_MEGABYTE * 1024;
 
+// CPU usage thresholds for colorization
+const CPU_MEDIUM_THRESHOLD = 25;
+const CPU_HIGH_THRESHOLD = 75;
+const CPU_VERY_HIGH_THRESHOLD = 90;
+
 var taskManager;
 var win;
 
@@ -135,7 +140,20 @@ function updateProcessesView() {
 
     row.pid = process.pid;
 
+    // Determine CPU usage category
+    let cpuLevel;
+    if (process.cpuTotal >= CPU_VERY_HIGH_THRESHOLD) {
+      cpuLevel = "very-high";
+    } else if (process.cpuTotal >= CPU_HIGH_THRESHOLD) {
+      cpuLevel = "high";
+    } else if (process.cpuTotal >= CPU_MEDIUM_THRESHOLD) {
+      cpuLevel = "medium";
+    } else {
+      cpuLevel = "low";
+    }
+
     row.setAttribute("active", active);
+    row.setAttribute("cpu-level", cpuLevel);
     row.setAttribute("idle", process.cpuTotal == 0.0);
     row.setAttribute("selected", selected);
   });
