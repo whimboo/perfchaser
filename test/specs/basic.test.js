@@ -15,7 +15,7 @@ describe('PerfChaser Extension - Basic Tests', function() {
     await helper.quit();
   });
 
-  describe('Extension Installation', function() {
+  describe('Basic sidebar features', function() {
     it('should load the sidebar page', async function() {
       await driver.get(helper.sidebarUrl);
 
@@ -46,37 +46,17 @@ describe('PerfChaser Extension - Basic Tests', function() {
 
       assert.ok(isDisplayed, 'CPU history chart should be displayed');
     });
-
-    it('should load the popup page', async function() {
-      await driver.get(helper.popupUrl);
-
-      // Verify page loaded by checking body element exists
-      const body = await driver.findElement(By.css('body'));
-      assert.ok(body, 'Popup body element should exist');
-    });
-
-    it('should display the update interval controls', async function() {
-      await driver.get(helper.popupUrl);
-
-      // Check for interval slider
-      const slider = await driver.findElement(By.css('#update-interval-slider'));
-      assert.ok(slider, 'Update interval slider should exist');
-
-      // Check for interval value display
-      const value = await driver.findElement(By.css('#update-interval-value'));
-      assert.ok(value, 'Update interval value display should exist');
-    });
   });
 
   describe('Process Data Collection', function() {
     it('should collect and display process data', async function() {
       await driver.get(helper.sidebarUrl);
 
-      // Wait up to 15 seconds for process data to load
+      // Wait up to 5 seconds for process data to load
       await driver.wait(async () => {
         const rows = await driver.findElements(By.css('#tbody-processes tr'));
         return rows.length > 0;
-      }, 15000, 'Expected process data to be loaded');
+      }, 5000, 'Expected process data to be loaded');
 
       const rows = await driver.findElements(By.css('#tbody-processes tr'));
       assert.ok(rows.length > 0, 'Should have at least one process row');

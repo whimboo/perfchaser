@@ -1,15 +1,8 @@
-const updateIntervalSlider = document.getElementById("update-interval-slider");
-const updateIntervalValue = document.getElementById("update-interval-value");
+const updateIntervalInput = document.getElementById("update-interval-input");
 
-function updateInterval(ev) {
+updateIntervalInput.addEventListener("change", ev => {
   browser.runtime.sendMessage({
     name: "set-update-interval",
     interval: parseInt(ev.target.value),
   })
-}
-
-updateIntervalSlider.addEventListener("change", updateInterval);
-updateIntervalSlider.addEventListener("input", ev => {
-  updateIntervalValue.value = ev.target.value;
 });
-updateIntervalValue.value = updateIntervalSlider.value;
