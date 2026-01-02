@@ -240,10 +240,14 @@ td:last-child {
 }
 
 .tab {
-  overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .tab button {
+  flex-shrink: 0;
   margin: 5px;
   min-width: 79px;
   background-color: inherit;
@@ -254,6 +258,7 @@ td:last-child {
   border: 1px solid transparent;
   border-radius: 4px;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .tab button:hover {
@@ -281,13 +286,31 @@ td:last-child {
   font-weight: normal;
 }
 
-#details-left p {
-  width: calc(50% - 1em);
+#details-grid {
+  display: grid;
+  grid-template-columns: 10em auto;
+  gap: 5px 10px;
+  align-items: center;
+  margin-top: 1em;
+  width: 95%;
 }
 
-#details-left p span {
-  float: right;
+#details-grid .label {
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#details-grid div:not(.label):not(hr) {
   text-align: right;
+}
+
+#details-grid hr {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 5px 0;
+  border-style: solid none none none;
+  border-color: var(--border-primary);
 }
 
 #details #cpu-kernel {
