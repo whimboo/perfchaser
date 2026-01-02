@@ -150,6 +150,29 @@ class FirefoxExtensionHelper {
   }
 
   /**
+   * Sets up a MutationObserver on the process table to track updates
+   * Initializes window.__updateCount and window.__updateTimestamps
+   */
+  async setupTableObserver() {
+    await this.#driver.executeScript(`
+      window.__updateCount = 0;
+      window.__updateTimestamps = [];
+      const tbody = document.getElementById('tbody-processes');
+      const observer = new MutationObserver((mutations) => {
+        if (mutations.length > 0) {
+          window.__updateCount++;
+          window.__updateTimestamps.push(Date.now());
+        }
+      });
+      observer.observe(tbody, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    `);
+  }
+
+  /**
    * Cleanup - quit driver
    */
   async quit() {
