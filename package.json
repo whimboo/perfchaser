@@ -8,7 +8,7 @@
     "test:debug": "mocha --config test/.mocharc.json --inspect-brk"
   },
   "devDependencies": {
-    "web-ext": "^9.2.0",
+    "web-ext": "^10.0.0",
     "mocha": "^11.7.0",
     "selenium-webdriver": "^4.39.0",
     "geckodriver": "^6.1.0"
