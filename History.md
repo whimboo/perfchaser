@@ -1,3 +1,16 @@
+0.9.0 / 2026-04-15
+==================
+
+  * Improve details pane of the sidebar (#106)
+  * Update to a number input field for the interval (#105)
+  * Add testing infrastructure and basic Webdriver tests (#104)
+  * Re-add extension popup to access options (#103)
+  * Make active processes in dark mode less visualle prominent (#102)
+  * Colorize processes to identify high CPU load (#101)
+  * Add support for dark mode (#99)
+  * Calculate idle time based on all processes (#97)
+  * Ignore errors when sending messages to the sidebar which might be closed. (#96)
+
 ## 0.8.2 / 2025-09-09
 
 * Calculate CPU idle value based on total CPU load
