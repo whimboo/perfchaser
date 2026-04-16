@@ -11,6 +11,12 @@
     "web-ext": "^10.0.0",
     "mocha": "^11.7.0",
     "selenium-webdriver": "^4.39.0",
-    "geckodriver": "^6.1.0"
+    "geckodriver": "^6.1.0",
+    "serialize-javascript": "7.0.5",
+    "diff": "8.0.3"
+  },
+  "overrides": {
+    "serialize-javascript": "7.0.5",
+    "diff": "8.0.3"
   }
 }
