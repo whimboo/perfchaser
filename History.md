@@ -1,3 +1,9 @@
+0.9.1 / 2026-05-05
+==================
+
+  * Use the browsing context to retrieve the "useRemoteSubframes" flag (#115)
+  * Override dependencies for serialize-javascript and diff until mocha is updated (#113)
+
 0.9.0 / 2026-04-15
 ==================
 
