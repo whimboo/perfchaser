@@ -127,7 +127,7 @@ var processes = class extends ExtensionAPI {
           const tab = extensionContext.extension.tabManager.get(tabId);
           return lazy.E10SUtils.getBrowserPids(
             tab.browser,
-            tab.browser.ownerGlobal.docShell.nsILoadContext.useRemoteSubframes
+            tab.browser.browsingContext.useRemoteSubframes
           );
         },
 
