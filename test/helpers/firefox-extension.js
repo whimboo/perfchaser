@@ -92,9 +92,6 @@ class FirefoxExtensionHelper {
     options.setPreference('extensions.experiments.enabled', true);
     options.setPreference('xpinstall.signatures.required', false);
 
-    // Add command-line arguments
-    options.addArguments('-remote-allow-system-access');
-
     // Use Firefox Nightly by default (required for WebExtension Experiments)
     // Can be overridden with FIREFOX_BINARY environment variable
     const firefoxBinary = process.env.FIREFOX_BINARY || await this.detectFirefoxNightly();
@@ -110,6 +107,9 @@ class FirefoxExtensionHelper {
 
     // Configure geckodriver service to output logs to console
     const service = new ServiceBuilder()
+      // Allow remote system access via environment variable, which geckodriver
+      // passes on to the launched Firefox process.
+      .setEnvironment({ ...process.env, MOZ_REMOTE_ALLOW_SYSTEM_ACCESS: '1' })
       .setStdio('inherit')  // Pipe geckodriver output to console
       .enableVerboseLogging(true);  // Enable trace-level logging
 
